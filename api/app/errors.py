@@ -9,7 +9,9 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 class AppError(Exception):
@@ -45,6 +47,34 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _handle_app_error(_: Request, exc: AppError) -> JSONResponse:
         return JSONResponse(status_code=exc.status_code, content=_envelope(exc))
+
+    @app.exception_handler(RequestValidationError)
+    async def _handle_validation(_: Request, exc: RequestValidationError) -> JSONResponse:
+        # FastAPI 기본 422({detail:[...]})를 단일 봉투로 통일 — 내부 구조는 노출 안 함.
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": "validation_error",
+                    "message": "요청 형식이 올바르지 않습니다.",
+                    "retryable": False,
+                }
+            },
+        )
+
+    @app.exception_handler(StarletteHTTPException)
+    async def _handle_http_exc(_: Request, exc: StarletteHTTPException) -> JSONResponse:
+        # 404/405 등 프레임워크 HTTPException 도 봉투로 통일.
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": {
+                    "code": "http_error",
+                    "message": str(exc.detail),
+                    "retryable": False,
+                }
+            },
+        )
 
     @app.exception_handler(Exception)
     async def _handle_unexpected(_: Request, exc: Exception) -> JSONResponse:

@@ -217,4 +217,25 @@ claude-opus-4-8 (bmad-dev-story)
 2. **Supabase 프로젝트 실존 여부**: AC5 Vercel 배포와 AC2 `supabase gen types`는 Supabase 프로젝트 연결이 필요. 아직 프로젝트를 안 만들었다면 이 스토리에서 빈 프로젝트를 1개 생성(무료 티어)하는 것을 Task에 포함할지 확인.
 3. **Ruff 추가는 architecture 명시 밖**(eslint→pytest만 적힘)이라 권장 사항으로 넣었음 — 원치 않으면 CI에서 빼도 됨.
 
+---
+
+## Senior Developer Review (AI)
+
+- **리뷰어:** claude-opus-4-8 (인라인) · **일자:** 2026-06-22 · **대상:** feat/1-1-bootstrap (PR #1)
+- **결과:** **Approve (minor follow-ups)** — CI 3 jobs green 실측. Medium 1건은 리뷰 중 즉시 수정.
+
+### Findings
+| # | 심각도 | 내용 | 처리 |
+|---|--------|------|------|
+| 1 | **Medium** | FastAPI 422 검증오류·404가 `{detail:[...]}`로 빠져나가 **단일 에러 봉투 계약 위반**. 부트스트랩이 "강제장치"를 세우는 스토리이므로 chokepoint에서 지금 고침이 맞음. | ✅ **수정** — `errors.py`에 `RequestValidationError`·`StarletteHTTPException` 핸들러 추가(봉투 통일), 테스트 2개(`validation_error`/404) 추가. |
+| 2 | Low | eslint `variableLike`가 camel/snake/Pascal/UPPER 모두 허용 → 로컬 camelCase 강제 약함. 단 AC3의 "`data.userId` 차단"은 본래 **tsc**(snake_case 생성 타입) 책임이고 naming-convention은 선언 단계 보조임. | 수용(문서화). 타입 동결(1.3) 후 tsc가 실질 강제. |
+| 3 | Low | CI web job이 `tsc`+`eslint`만, `next build` 미실행. AC2 요건은 충족하나 RSC/빌드 오류는 못 잡음. | 화면 생기는 1.8에서 build 게이트 추가 권장. |
+| 4 | Low | `web/package.json`의 `next: "latest"` 등 미고정(lockfile이 핀). | 스타터 산출물 존중(스토리 지침). lockfile로 재현성 확보. |
+| 5 | Info | `api/pyproject.toml` `requires-python = ">=3.14"` — Fly.io 런타임 이미지도 3.14 필요. | Story 3.1a 배포 시 반영. |
+| 6 | **Blocked** | **branch protection 적용 불가** — 무료 **private** repo는 classic·rulesets 모두 GitHub Pro/public 요구(403). AC2 "머지 차단"의 GitHub 강제가 안 됨. | 사용자 결정 필요: ①public 전환 ②Pro ③소프트 게이트(CI는 PR에 표시되나 하드 차단 없음)±pre-push 훅. |
+| 7 | Known | 스타터가 **Tailwind v3.4** 제공(아키텍처/UX는 v4 가정). | Story 1.8(디자인 토큰)에서 v3↔v4 결정. |
+
+### 종합
+구조·게이트·계약 모두 의도대로 섰고 CI 실측 green. Finding #1(봉투 누수)은 후반 비용이 큰 종류라 리뷰 단계에서 수정한 게 핵심 성과. #6(branch protection)만 제품 외적 결정으로 남음. **머지 권장.**
+
 위 3건은 dev 세션 시작 시 또는 지금 답해주면 반영합니다.
