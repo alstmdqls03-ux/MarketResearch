@@ -50,7 +50,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   # ── Epic 1: 기반 + 첫인상 ──
   epic-1: in-progress
-  1-1-starter-bootstrap: ready-for-dev
+  1-1-starter-bootstrap: in-progress
   1-8-app-shell: backlog          # 앱 셸: 피처 화면(1-4~1-7) 전에 구현 (이후 화면이 상속)
   1-2-auth-login: backlog
   1-3-schema-freeze: backlog
