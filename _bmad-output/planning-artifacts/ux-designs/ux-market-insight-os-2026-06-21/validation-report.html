@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<!--
+  UX Design Validation Report — Market Insight OS
+  Consolidated from review-rubric.md + review-accessibility.md.
+  Status tags ([해결됨]/[미해결]) reflect post-review spine edits.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>UX Design Validation: Market Insight OS</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  .status-tag { font-weight: 600; font-size: 12px; padding: 1px 7px; border-radius: 4px; white-space: nowrap; }
+  .status-resolved { background: rgba(22,163,74,0.12); color: #16a34a; }
+  .status-open { background: rgba(220,38,38,0.12); color: #dc2626; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>Market Insight OS — UX 디자인 검증 보고서</h1>
+        <div class="subtitle">_bmad-output/planning-artifacts/ux-designs/ux-market-insight-os-2026-06-21/{DESIGN.md, EXPERIENCE.md}</div>
+      </div>
+    </header>
+
+    <div class="synthesis">
+      <p>스파인 쌍은 내용상 매우 강하다 — PRD의 모든 FR/NFR/UJ가 IA·State·Component·Flow로 촘촘히 매핑되고, shadcn 상속 규율과 LOCKED 의미색·신뢰 UI 같은 제품 고유 제약이 일관되게 양쪽에 살아 있다. 리뷰 시점의 결정적 약점은 <strong>시각 레퍼런스 계약의 부재</strong>였다: D14가 약속한 3종 목업이 생성되지 않았고, 존재하던 <code>color-themes-1.html</code>조차 어느 스파인에서도 인라인 링크되지 않았으며 "spines-win-on-conflict" 선언이 한 번도 없었다. 토큰 측면에서는 load-bearing 색 조합의 명시적 대비 타깃이 없고 <code>{colors.destructive}</code> 참조가 로컬 미정의(상속)라는 점이 다운스트림 검증 공백으로 남아 있었다.</p>
+      <p>접근성(WCAG 2.1 AA) 렌즈는 추가로 대비 층에서 실제로 깨지는 조합(면책 muted, 상승 RED 소형 텍스트, 칼날 통과하던 as-of 앰버)과 비타이핑 경로의 키보드/스크린리더 계약이 "지향" 선언에만 머물러 있던 점을 적출했다. <strong>리뷰 이후 스파인이 편집되어 거의 모든 지적이 해결되었다</strong> — disclaimer-fg 전용 토큰 신설(≥4.5:1), 상승 텍스트용 up-text(#C81E1E) 도입, as-of warning-text(#9A3E07) 강화, destructive 토큰 명시 정의, numeric fontSize/lineHeight 확정, 핵심 조합 대비 타깃 블록 추가, 칩 aria-pressed + 점진 공개 announce 의무화, FR43 거부 상태·운영자 State 행 추가, Insight Score(거울) 명칭 정규화, spines-win-on-conflict 선언, 그리고 3종 목업 렌더 + color-themes-1.html 인라인 링크까지 반영되었다. 아래 각 지적의 <span class="status-tag status-resolved">해결됨</span> / <span class="status-tag status-open">미해결</span> 태그가 현재 상태를 표시한다.</p>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card"><div class="dim-name">1. Flow coverage</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">2. Token completeness</div><div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div></div>
+      <div class="dim-card"><div class="dim-name">3. Component coverage</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">4. State coverage</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">5. Visual reference coverage</div><div class="dim-verdict" style="color: var(--verdict-broken)">broken</div></div>
+      <div class="dim-card"><div class="dim-name">6. Bloat &amp; overspecification</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">7. Inheritance discipline</div><div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div></div>
+      <div class="dim-card"><div class="dim-name">8. Shape fit</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+    </div>
+
+    <!-- 1. Flow coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>1. Flow coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>PRD User Journeys J0–J5 전수 대조 통과. J0→Flow J0, J1→Flow 1, J2→Flow 2, J3→Flow J3, J5→Flow J5 모두 명명된 protagonist(민수/지영/신규/Lurker)·번호 단계·클라이맥스 비트 보유. 실패 경로는 Flow 1·Flow 2에 명시. J4(운영)는 의도적 축소.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">FR43(유효하지 않은 종목 입력 거부·안내) 전용 State Pattern·Flow·마이크로카피 부재</h3>
+              <span class="finding-location">EXPERIENCE.md:25,75 / Flow J0</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">FR43이 IA 표(관심종목 행)에만 있고 온보딩 Flow J0의 "관심종목 1개만" 입력 거부 시 행위가 미정의였다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> State Patterns에 "입력 거부/미지원 종목" 행 + Voice 거부 카피 1줄 추가. → FR43 거부 상태 State Pattern 추가로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Flow 1 클라이맥스 복기 카피가 PRD와 미세 불일치(목표가 도달 언급 누락)</h3>
+              <span class="finding-location">prd.md:110 / EXPERIENCE.md:121</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">PRD J1은 "목표가는 도달했지만", EXPERIENCE Flow 1은 "결과는 좋았으나 horizon은 '1주'였고"로 인용 데이터포인트(FR23) 하나가 누락. 의미 손상은 아님.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 복기 예시에 목표가 도달 사실 복원 또는 의도적 단순화 주석.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">운영자 J4의 다운스트림 스펙 처리 여부가 [NOTE FOR UX] 미해결 상태</h3>
+              <span class="finding-location">EXPERIENCE.md:153</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">운영자 J4가 Key Flow에서 빠진 근거는 있으나, 다음 게이트 전 운영 화면의 MVP 인앤아웃 결정이 필요.</div>
+            <div class="finding-fix"><strong>Fix:</strong> IA 표의 "운영자(최소)" 행을 MVP 범위에서 명시적으로 인앤아웃 표기.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 2. Token completeness -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>2. Token completeness</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>색 토큰은 라이트/다크 쌍 완비(primary/up/down/warning/중립 전부 -dark 동반, hex 누락 0). <code>{path.to.token}</code> 참조 전수 추적 — components 블록 내부 참조 전부 frontmatter에 resolve. typography 3단 + numeric 정의됨.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title"><code>{colors.destructive}</code> 참조가 frontmatter 미정의 토큰을 가리킴</h3>
+              <span class="finding-location">DESIGN.md:109,128</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">async-state.error-foreground가 미정의 destructive를 참조 — 검증기가 미정의로 플래그할 수 있고 라이트/다크 쌍·대비 미보장.</div>
+            <div class="finding-fix"><strong>Fix:</strong> destructive를 명시 정의(zinc #3F3F46/#D4D4D8) + icon+label 의무. → 정의 추가로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">load-bearing 색 조합의 명시적 대비 타깃 부재</h3>
+              <span class="finding-location">EXPERIENCE.md:95 / DESIGN.md Colors</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">up/down on surface, warning on warning-bg, primary-foreground on primary 모두 정보 전달 핵심인데 AA 비율 수치 명시가 없었다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 핵심 조합별 목표 대비 블록(본문 4.5:1 / 큰 텍스트 3:1) 추가. → contrast targets 블록 추가로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title"><code>{typography.numeric}</code>에 fontSize/lineHeight 미정의</h3>
+              <span class="finding-location">DESIGN.md:56-60</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">numeric을 단독 적용하는 표면에서 다운스트림이 사이즈를 추측해야 했다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> numeric 사이즈 규칙 명시. → fontSize 14px / lineHeight 1.4 정의로 해결.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 3. Component coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>3. Component coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>7개 제품 컴포넌트(research-card, chip, button-primary, asof-badge, disclaimer, score-mirror, async-state) 전부 DESIGN.md.Components(시각) + EXPERIENCE.md.Component Patterns(행위) 양쪽 행 보유. 이름·토큰 참조 verbatim 일치. shadcn 상속 목록도 정합.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">shadcn 상속 컴포넌트 전체 목록이 한 곳에 없음(Separator vs Skeleton 예시 비대칭)</h3>
+              <span class="finding-location">DESIGN.md:165 / EXPERIENCE.md:18,76</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">불일치는 아니나(예시 vs 전체) 다운스트림이 상속 목록 전체를 한 곳에서 못 본다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 경미 — 무시 가능, 또는 EXPERIENCE에서 "DESIGN.md.Components의 상속 목록 참조" 1줄.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">score-mirror 추세선 색 선택(의미색 vs primary/중립) 미지정</h3>
+              <span class="finding-location">DESIGN.md:172</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">추세 라인/바가 components 블록에 토큰화되지 않고, 추세 색 선택이 미지정 — 거울 철학상 등락색 오용 위험.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 추세선은 의미색 아닌 primary 또는 중립 사용임을 1줄 못박기.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 4. State coverage -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>4. State coverage</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>State Patterns 6행이 빈상태/온보딩·로딩/비동기·오류(가시적)·as-of/stale·append-only/버전·원자결정+스냅샷 커버. IA 13개 표면 walk — 각 표면의 cold-load·empty·error·stale·version 상태가 State 표/Flow로 매핑. DB GUARDRAIL이 다운스트림 아키텍처 계약으로 명시.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">운영자(최소) 표면이 State Patterns에 행이 없음(FR37 실패 큐·재시도)</h3>
+              <span class="finding-location">EXPERIENCE.md State 표 / IA:36</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">파이프라인 실패 모니터·재시도의 운영자측 상태가 사용자측 "데이터 보강 중"과 분리되어 미기술이었다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> State 표에 운영자 상태 행 추가 또는 별도 내부 스펙 주석. → 운영자 State 행 추가로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">대시보드 cold-load 스켈레톤(NFR-P2 &lt;2s)이 State 표에 명시 행 없음</h3>
+              <span class="finding-location">EXPERIENCE.md:76 / prd.md:334</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">로딩/비동기 AI 행은 리서치·복기 한정이고 대시보드 초기 로드 스켈레톤은 미기술.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 로딩 행에 "대시보드 콜드로드 스켈레톤(&lt;2s)" 포함.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5. Visual reference coverage -->
+    <section class="dimension">
+      <details open>
+        <summary>
+          <h2>5. Visual reference coverage</h2>
+          <span class="verdict-pill verdict-broken">broken</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>리뷰 시점 <code>.working/</code> = <code>color-themes-1.html</code> 1개만 존재. D14가 약속한 <code>key-research-card</code>/<code>key-30s-check</code>/<code>key-dashboard</code> 3종 목업 미생성, 인라인 시각 레퍼런스 링크 0건, "spines-win-on-conflict" 선언 0건이라 broken 판정. 이 카테고리의 세 지적은 모두 사후 편집으로 해결되었다.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">D14가 명시한 핵심 화면 목업 3종(리서치 카드/30초 체크/대시보드) 미생성</h3>
+              <span class="finding-location">.decision-log.md:71 / .working/</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">목업 자체가 없어 다운스트림 빌드가 시각 합성 레퍼런스 없이 출발해야 했다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 3종 목업 렌더 후 EXPERIENCE.md IA 섹션에 인라인 링크. → key-research-card / key-buy-check / key-dashboard .html 렌더로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title"><code>color-themes-1.html</code>이 어느 스파인에서도 링크/명명되지 않음 (orphan)</h3>
+              <span class="finding-location">.working/color-themes-1.html / .decision-log.md:56</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">미링크 시 다운스트림이 폐기된 후보를 살아있는 레퍼런스로 오인할 위험.</div>
+            <div class="finding-fix"><strong>Fix:</strong> DESIGN.md Colors에 최종 팔레트 확정(Deep Indigo 채택)으로 명명·인라인. → color-themes-1.html 인라인 링크로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">"spines-win-on-conflict" 선언이 양 스파인 어디에도 없음</h3>
+              <span class="finding-location">cf. experience-example:29</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">스파인이 목업/시각 레퍼런스와 충돌 시 우선한다는 선언이 한 번도 없었다.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 목업 링크와 같은 줄에 "충돌 시 스파인 우선" 명시. → Foundation에 spines-win-on-conflict 선언 추가로 해결.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 6. Bloat & overspecification -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>6. Bloat &amp; overspecification</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>과소·과대 모두 없음. DESIGN.md는 브랜드 델타만 규정하고 shadcn 80%를 상속 선언으로 압축. components 블록 7개로 절제. EXPERIENCE는 sources(FR/NFR) 중복 기술 안 함. DB GUARDRAIL은 길지만 사용자 지시·다운스트림 계약이라 정당. 지적 없음.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- 7. Inheritance discipline -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>7. Inheritance discipline</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>소스(prd/product-brief) resolve, UJ·컴포넌트명·glossary verbatim 일치. EXPERIENCE 토큰 참조 전부 DESIGN 토큰으로 resolve(destructive 예외는 §2). 네이밍 가드(alpha/picks/signals/journal 회피) 양쪽 정합.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"Insight Score" vs "Score 거울" vs "Score Mirror(score-mirror)" 표기 혼재</h3>
+              <span class="finding-location">DESIGN.md:101,172 / EXPERIENCE.md:32,68</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">의미 동일하나 다운스트림 검색·매핑 시 이름 3종.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 1차 표기를 "Insight Score (거울 / score-mirror)"로 한 번 정의 후 일관 사용. → canonical "Insight Score (거울)" 정규화로 해결.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- 8. Shape fit -->
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>8. Shape fit</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>DESIGN.md 본문 섹션이 spec 정규 순서 준수. frontmatter 키 셋 정합. EXPERIENCE 필수 섹션(Foundation/IA/Voice/Component Patterns/State/Interaction Primitives/Accessibility/Key Flows) 전부 존재. "미해결/갭" 자가점검 섹션은 다운스트림 트리아지 가치로 자리값 함.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">DESIGN.md frontmatter에 sources 미기재(EXPERIENCE 대비 추적성 비대칭)</h3>
+              <span class="finding-location">DESIGN.md frontmatter</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">DESIGN spec상 sources 필수는 아니나 추적성 비대칭.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 경미 — 무시 가능.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <!-- Accessibility reviewer -->
+    <section class="reviewer-section">
+      <details open>
+        <summary>
+          <h2>접근성 리뷰 (WCAG 2.1 AA)</h2>
+          <span class="reviewer-source">review-accessibility.md</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>스파인의 접근성 의도는 동종 핀테크 평균을 상회한다 — 탭 타깃 ≥44px가 토큰(<code>spacing.tap-min</code>)으로 박혀 있고, 색맹 안전을 위해 부호/화살표 글리프 병기가 Do/Don't에 명시되어 있으며, 30초 마찰은 시간제한이 아니라 자가 속도(self-paced)라 Timing 위반이 없다. 그러나 <strong>대비 층에서 실제로 깨지는 조합이 있었다</strong>: 면책 캡션(muted)은 라이트/다크 양쪽에서 4.5:1을 통과하지 못하고, 상승 RED(#E5383B)를 11.5px 소형 헤더로 쓰면 4.23:1로 미달했다. 키보드/스크린리더 경로는 "지향" 선언에 그쳐 점진 공개 announce 책임이 컴포넌트 계약으로 못이 박혀 있지 않았다 — 의도는 옳으나 contract로 박혀 있지 않았다. 심각도 집계(리뷰 시점): critical 1 · high 3 · medium 4 · low 3.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">면책 고지(disclaimer)가 라이트·다크 양쪽에서 AA 본문 대비 미달</h3>
+              <span class="finding-location">DESIGN.md L98-100 / color-themes-1.html .disc</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">라이트 2.76:1, 다크 3.46:1 — 둘 다 4.5:1 미달, 큰 글자 예외(3:1)도 안 되는 11px 소형. 면책은 규제 방패이자 제품 원칙(FR34)이라 "읽히지 않는 면책"은 핵심 기능이 접근성으로 깨지는 것.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 면책 텍스트 색을 muted에서 분리, 4.5:1 통과 전용 토큰 신설. → disclaimer-fg #52525B(light)/#A1A1AA(dark), ≥4.5:1로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">상승 RED를 소형 텍스트(thesis 헤더·등락률)로 쓰면 AA 미달</h3>
+              <span class="finding-location">color-themes-1.html L107-108,L92 / DESIGN.md L167</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">상승 RED #E5383B는 흰 surface 위 4.23:1 — 소형 텍스트 4.5:1 미달. 하락 BLUE(5.17:1)는 통과하므로 상승/하락 대비 비대칭. LOCKED 의미색과 충돌.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 텍스트용 명도 변형 도입, LOCK은 hue에만 적용한다는 단서 추가. → up-text #C81E1E (~5.9:1) 추가, fill #E5383B 유지로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">as-of 앰버 배지가 4.51:1로 칼날 통과 — 렌더링 변동에 깨질 마진 없음</h3>
+              <span class="finding-location">DESIGN.md L94-96,L170 / color-themes-1.html L96-98</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">10.5px 소형 + Pretendard 렌더링 차이 + 서브픽셀에서 실측은 미달로 떨어질 수 있음. as-of는 신뢰 UI 핵심(FR32).</div>
+            <div class="finding-fix"><strong>Fix:</strong> 앰버 텍스트를 한 톤 어둡게 내려 5:1대 마진 확보. → warning-text #9A3E07로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">비타이핑(탭/칩) 경로의 포커스 순서·레이블·점진 공개 announce가 "지향" 선언에 그침</h3>
+              <span class="finding-location">EXPERIENCE.md L97-102, L86</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">칩 selected 상태가 색에만 의존하면(aria-pressed/role 없음) SR 사용자에게 선택 상태 미전달. 점진 공개 동적 콘텐츠의 announce 규정 부재.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 칩 aria-pressed/aria-checked + 점진 공개 aria-live/포커스 이동을 컴포넌트 계약으로 추가. → 칩 aria-pressed + 점진공개 announce를 Component Patterns + Accessibility Floor에 의무화로 해결.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">도트/보더 등 비텍스트 UI 요소의 3:1 대비 미검증</h3>
+              <span class="finding-location">color-themes-1.html L99,L104,L101</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">카드 경계 border #E5E5EC / 흰 surface는 약 1.1:1 — 톤 차이로 이중화는 했으나 입력/포커스 가능 요소 경계가 3:1 충족하는지 컴포넌트 단계 확인 필요.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 입력/포커스 요소 경계는 3:1 충족 input/ring 토큰을 별도 검증(shadcn 인디고 ring 6.29:1로 안전).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">보조·파괴 인터랙션(삭제, ⓘ 아이콘, "기타" 입력 close)의 ≥44px 타깃 크기 누락</h3>
+              <span class="finding-location">DESIGN.md L75,L86,L93 / EXPERIENCE.md L98,L26</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">칩(44px)·버튼(46px)은 통과하나 삭제·실행취소 등 보조 액션이 44px 미만이면 모바일 실사용에서 WCAG 2.5.5 위반.</div>
+            <div class="finding-fix"><strong>Fix:</strong> "모든 인터랙티브 요소(보조·파괴 포함) ≥44px"로 일반화, 아이콘 전용 버튼은 히트영역 44px 명시.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"기타(직접)" 입력 모달의 포커스 트랩/복귀 미규정</h3>
+              <span class="finding-location">EXPERIENCE.md L64,L87</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">비타이핑 경로 완전 운용성은 보장되나, "기타" 선택 시 입력 필드 포커스 이동·Esc 취소 후 칩 복귀 관리가 없음.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 칩→입력 전환 시 포커스 이동과 Esc 취소 후 포커스 복귀를 칩 행위 규칙에 명시.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">오류·재시도 상태가 SR에 announce되는지 미규정</h3>
+              <span class="finding-location">DESIGN.md L173 / EXPERIENCE.md L69,L77</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">"가시적"이 시각만 의미하면 SR 사용자는 오류 발생을 모를 수 있음. 비동기 생성 실패 순간이 특히 위험.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 오류는 role="alert"/aria-live="assertive", 진행 표시는 aria-busy로 노출하도록 async-state 규칙에 명시.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Score 거울 추세선이 색만으로 방향 전달 시 색-단독 신호 위험</h3>
+              <span class="finding-location">DESIGN.md L181,L172 / EXPERIENCE.md L100</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">카드 등락은 글리프 병기로 안전하나, Score 추세 라인/바가 상승/하락 색만으로 방향을 전달하면 색-단독.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 추세 시각화에도 직접 라벨(+/− 값) 또는 패턴(실선/점선)을 병기하도록 Score Mirror 스펙에 1줄 추가.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">숫자·티커의 SR 발음/언어 태깅 미규정(혼합 언어 라인)</h3>
+              <span class="finding-location">EXPERIENCE.md L101 / DESIGN.md L134</span>
+              <span class="status-tag status-open">미해결</span>
+            </header>
+            <div class="finding-note">미국 티커(NVDA)와 한국어가 한 줄에 섞이고 tabular-nums 수치가 많아 $172.41·-8% 등이 SR에서 자연스럽게 읽히도록 보강 여지.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 혼합 언어 라인에 부분 lang 태깅, 등락 값은 "상승 2.3퍼센트"처럼 읽히는 aria-label 패턴 권장.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">30초 "과속방지턱"은 자가 속도 — WCAG 2.2.1 위반 없음 (확인 완료)</h3>
+              <span class="finding-location">EXPERIENCE.md L88,L91</span>
+              <span class="status-tag status-resolved">해결됨</span>
+            </header>
+            <div class="finding-note">강제 모달 게이트·행동 차단형 경고 금지, 카운트다운·자동 진행·세션 만료 아님 → 2.2.1 대상 아님. 깜빡임 금지로 2.3.1도 차단.</div>
+            <div class="finding-fix"><strong>Fix:</strong> 불필요. (self-paced 명시 noted.) 향후 토스트는 표시 시간 충분/dismiss 가능 명시 권장.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Mechanical notes</h3>
+      <ul>
+        <li>시각 레퍼런스 = 리뷰 시점 최대 다운스트림 공백(목업 3종 critical + orphan high + spines-win high) — 셋 다 사후 편집으로 해결됨.</li>
+        <li>대비 층의 critical/high 3건(면책 muted, 상승 RED 텍스트, as-of 앰버)이 전용 토큰 신설·명도 변형으로 모두 해결됨.</li>
+        <li>접근성 계약화: 칩 aria-pressed + 점진 공개 announce가 컴포넌트 계약으로 박힘(해결). 단, 오류 announce·포커스 트랩·보조 타깃 크기·추세선 색-단독·언어 태깅은 미해결로 다음 게이트 잔여.</li>
+        <li>{colors.destructive} 미정의·numeric 사이즈·대비 타깃 부재 등 토큰 공백은 모두 명시 정의로 닫힘.</li>
+        <li>이름 비일관(Insight Score/Score 거울/score-mirror)은 canonical 표기 정규화로 해결.</li>
+      </ul>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rubric: review-rubric.md</span>
+        <span>Accessibility: review-accessibility.md</span>
+        <span>Generated: 2026-06-21</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

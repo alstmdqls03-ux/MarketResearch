@@ -1,0 +1,92 @@
+# generated: 2026-06-22
+# last_updated: 2026-06-22
+# project: Market Insight OS
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+#
+# BUILD ORDER NOTE (re-arranged via party-mode, solo 4-week, Week=Epic):
+#   E1 기반+첫인상 (AI 없음, 단일 Next.js) → E2 HERO 저널 (AI-free) → E3 리서치+AI (FastAPI greenfield) → E4 복기&거울
+#   E1 내부: 1-1 스타터 → 1-8 앱셸(피처 화면 전 권장) → 1-3 스키마 동결 → 1-2/1-4~1-7
+#   E3 내부: 3-1a FastAPI 워킹 스켈레톤 먼저 → 3-1b chokepoint → 카드/통찰
+#   E4 내부: 4-1 결과 산출 → 4-2 복기 (복기가 결과를 인용하므로 선행)
+
+generated: 2026-06-22
+last_updated: 2026-06-22  # 1-1 ready-for-dev, epic-1 in-progress
+project: Market Insight OS
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # ── Epic 1: 기반 + 첫인상 ──
+  epic-1: in-progress
+  1-1-starter-bootstrap: ready-for-dev
+  1-8-app-shell: backlog          # 앱 셸: 피처 화면(1-4~1-7) 전에 구현 (이후 화면이 상속)
+  1-2-auth-login: backlog
+  1-3-schema-freeze: backlog
+  1-4-watchlist: backlog
+  1-5-eod-quotes: backlog
+  1-6-fact-panel: backlog
+  1-7-dashboard: backlog
+  epic-1-retrospective: optional
+
+  # ── Epic 2: 판단 저널 (HERO, AI-free) ──
+  epic-2: backlog
+  2-1a-record-decision-backend: backlog
+  2-1b-buy-check-ux: backlog
+  2-2-emotion-intervention: backlog
+  2-3-target-stoploss: backlog
+  2-4-sell-check: backlog
+  2-5-record-integrity: backlog
+  epic-2-retrospective: optional
+
+  # ── Epic 3: 종목 리서치 + AI 인프라 ──
+  epic-3: backlog
+  3-1a-fastapi-jwt-bootstrap: backlog
+  3-1b-llm-chokepoint: backlog
+  3-2-research-card: backlog
+  3-3-onboarding-card: backlog
+  3-4-immediate-insight: backlog
+  3-5-daily-brief: backlog
+  3-6-nudge: backlog
+  epic-3-retrospective: optional
+
+  # ── Epic 4: 복기 & 거울 ──
+  epic-4: backlog
+  4-1-outcome-matching: backlog
+  4-2-ai-review: backlog
+  4-3-dashboard-review-alert: backlog
+  4-4a-scheduler: backlog
+  4-4b-batch-tasks: backlog
+  4-5-insight-score: backlog
+  epic-4-retrospective: optional

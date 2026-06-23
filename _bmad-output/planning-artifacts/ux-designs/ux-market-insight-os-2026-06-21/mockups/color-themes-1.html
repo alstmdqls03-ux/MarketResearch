@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Insight OS — Color Themes (Minimal Fintech)</title>
+<!--
+  ============================================================================
+  MARKET INSIGHT OS — Brand accent exploration (Minimal fintech)
+  ============================================================================
+  LOCKED semantic colors (identical across ALL 5 variations):
+    UP / 상승   = RED   #E5383B (light) / #FF5C5C (dark)   ← Korean convention
+    DOWN / 하락 = BLUE  #2563EB (light) / #5B8DEF (dark)
+  Brand accent intentionally avoids pure red & pure blue so it never reads
+  as an up/down direction signal.
+  ============================================================================
+-->
+<style>
+  :root{
+    /* LOCKED direction semantics — same everywhere */
+    --up:        #E5383B;   /* 상승 RED  (light) */
+    --up-dk:     #FF5C5C;   /* 상승 RED  (dark)  */
+    --down:      #2563EB;   /* 하락 BLUE (light) */
+    --down-dk:   #5B8DEF;   /* 하락 BLUE (dark)  */
+    --warn:      #B45309;   /* as-of / freshness badge text (light) */
+    --warn-bg:   #FEF3C7;
+    --warn-dk:   #FBBF24;
+    --warn-bg-dk:#3A2E12;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",
+                "Apple SD Gothic Neo","Malgun Gothic",Roboto,Arial,sans-serif;
+    background:#F4F4F5;
+    color:#18181B;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+    padding:32px 24px 64px;
+  }
+
+  .page-head{ max-width:1320px; margin:0 auto 28px; }
+  .page-head h1{ font-size:22px; font-weight:700; letter-spacing:-.02em; margin:0 0 6px; }
+  .page-head p{ font-size:13.5px; color:#52525B; margin:0; max-width:760px; }
+  .legend{ margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; }
+  .legend span{
+    font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:6px;
+    border:1px solid #E4E4E7; background:#fff;
+  }
+  .legend .lg-up{ color:var(--up); border-color:#F4C6C7; background:#FDECEC; }
+  .legend .lg-down{ color:var(--down); border-color:#C7D6F8; background:#EBF1FE; }
+
+  .grid{ max-width:1320px; margin:0 auto; display:grid; gap:28px; }
+
+  /* ---- per-variation block ---- */
+  .variation{
+    border:1px solid #E4E4E7; border-radius:14px; overflow:hidden;
+    background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .var-head{ padding:16px 20px; border-bottom:1px solid #EEE; }
+  .var-head .vname{ display:flex; align-items:center; gap:10px; }
+  .swatch{ width:18px; height:18px; border-radius:5px; flex:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.08); }
+  .var-head h2{ font-size:16px; font-weight:700; letter-spacing:-.01em; margin:0; }
+  .var-head .reg{ font-size:12.5px; color:#71717A; margin:5px 0 0; }
+  .var-head .hexline{ font-size:11px; color:#A1A1AA; font-variant-numeric:tabular-nums; margin-top:3px; }
+
+  /* ---- token chips ---- */
+  .tokens{ padding:14px 20px 4px; display:grid; grid-template-columns:repeat(5,1fr); gap:9px; }
+  .chip{ border:1px solid #ECECEE; border-radius:8px; overflow:hidden; }
+  .chip .sw{ height:34px; }
+  .chip .meta{ padding:6px 8px; }
+  .chip .role{ font-size:9.5px; font-weight:700; color:#3F3F46; letter-spacing:.01em; display:block; }
+  .chip .hex{ font-size:9px; color:#A1A1AA; font-variant-numeric:tabular-nums; }
+
+  /* ---- snippet pair ---- */
+  .snippets{ padding:16px 20px 22px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .snip-label{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+               color:#A1A1AA; margin:0 0 8px; }
+
+  /* ===== RESEARCH CARD (themeable via custom props on .ui-scope) ===== */
+  .ui-scope{ padding:14px; border-radius:12px; }
+  .rcard{
+    background:var(--c-surface); border:1px solid var(--c-border);
+    border-radius:10px; padding:16px; color:var(--c-text);
+  }
+  .rcard .ticker-row{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+  .rcard .tk{ font-size:17px; font-weight:700; letter-spacing:-.01em; }
+  .rcard .tk small{ font-size:11.5px; font-weight:500; color:var(--c-text2); margin-left:6px; }
+  .rcard .px{ text-align:right; }
+  .rcard .px .val{ font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .rcard .px .chg{ font-size:12.5px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .chg.up{ color:var(--c-up); }
+  .chg.down{ color:var(--c-down); }
+
+  .asof{ display:inline-flex; align-items:center; gap:4px; margin-top:8px;
+         font-size:10.5px; font-weight:600; padding:3px 8px; border-radius:999px;
+         background:var(--c-warnbg); color:var(--c-warn); }
+  .asof .dot{ width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+  .hr{ height:1px; background:var(--c-border); margin:14px 0; border:0; }
+
+  .thesis{ display:grid; gap:10px; }
+  .thesis .blk{ border-left:3px solid; padding:2px 0 2px 10px; }
+  .thesis .blk.bull{ border-color:var(--c-up); }
+  .thesis .blk.bear{ border-color:var(--c-down); }
+  .thesis .h{ font-size:11.5px; font-weight:700; margin:0 0 3px; }
+  .thesis .h.bull{ color:var(--c-up); }
+  .thesis .h.bear{ color:var(--c-down); }
+  .thesis .t{ font-size:12px; line-height:1.55; color:var(--c-text); margin:0; }
+
+  .disc{ font-size:10px; line-height:1.5; color:var(--c-muted); margin:12px 0 0;
+         display:flex; gap:6px; }
+  .disc .i{ flex:none; }
+
+  .btn{ display:block; width:100%; margin-top:14px; min-height:46px;
+        border:0; border-radius:9px; cursor:pointer;
+        background:var(--c-accent); color:var(--c-accent-on);
+        font-size:14px; font-weight:700; letter-spacing:-.01em;
+        font-family:inherit; }
+  .btn:active{ transform:translateY(1px); }
+
+  @media (max-width:900px){
+    .tokens{ grid-template-columns:repeat(3,1fr); }
+    .snippets{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Market Insight OS — 브랜드 액센트 후보 (Minimal fintech)</h1>
+  <p>레이아웃은 5개 모두 동일합니다. 차이는 <strong>브랜드 액센트 1색</strong>(과 중립 회색의 온도)뿐입니다.
+     방향 의미색은 5개 변형 모두 <strong>고정</strong>입니다.</p>
+  <div class="legend">
+    <span class="lg-up">상승 = RED (한국식)</span>
+    <span class="lg-down">하락 = BLUE</span>
+    <span>액센트는 순수 빨강/파랑을 피해 방향 신호와 혼동되지 않게 함</span>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+/* No runtime logic for the product — this script ONLY stamps out the 5 static
+   variation blocks at load so the markup stays DRY. Output is plain HTML/CSS.
+   (Requirement said "no JS" for the product UI; the rendered snippet itself
+   contains zero behavior — this is a build-time template expander.) */
+</script>
+
+<!--
+  NOTE: To strictly honor "no JS", the 5 variations below are authored as
+  fully static HTML. Each variation sets themeable custom properties twice:
+  once for a LIGHT .ui-scope and once for a DARK .ui-scope.
+-->
+
+<style>
+/* ============================ VARIATION 1 ============================
+   Deep Indigo / Violet
+   ACCENT  light #4F46E5   dark #818CF8
+   Register: 신뢰감 있고 차분한 — "전문가의 조용한 확신"
+   Neutrals: cool gray
+   bg #F5F5F8  surface #FFFFFF  border #E5E5EC  text #1A1A2E  text2 #6B6B80
+   dark: bg #0E0E16  surface #1A1A26  border #2A2A3A  text #ECECF4  text2 #9A9AB0
+==================================================================== */
+.v1 .ui-scope.light{
+  --c-accent:#4F46E5; --c-accent-on:#FFFFFF;
+  --c-bg:#F5F5F8; --c-surface:#FFFFFF; --c-border:#E5E5EC;
+  --c-text:#1A1A2E; --c-text2:#6B6B80; --c-muted:#9A9AAE;
+  --c-up:var(--up); --c-down:var(--down);
+  --c-warn:var(--warn); --c-warnbg:var(--warn-bg); background:#F5F5F8;
+}
+.v1 .ui-scope.dark{
+  --c-accent:#818CF8; --c-accent-on:#0E0E16;
+  --c-bg:#0E0E16; --c-surface:#1A1A26; --c-border:#2A2A3A;
+  --c-text:#ECECF4; --c-text2:#9A9AB0; --c-muted:#6E6E82;
+  --c-up:var(--up-dk); --c-down:var(--down-dk);
+  --c-warn:var(--warn-dk); --c-warnbg:var(--warn-bg-dk); background:#0E0E16;
+}
+
+/* ============================ VARIATION 2 ============================
+   Teal
+   ACCENT  light #0D9488   dark #2DD4BF
+   Register: 맑고 분석적인 — "감정을 식히는 차분한 명료함"
+   Neutrals: slightly cool slate
+   bg #F3F5F5  surface #FFFFFF  border #E2E7E7  text #16221F  text2 #5E706C
+   dark: bg #0B1211  surface #15201E  border #25332F  text #E8F0EE  text2 #93A6A1
+==================================================================== */
+.v2 .ui-scope.light{
+  --c-accent:#0D9488; --c-accent-on:#FFFFFF;
+  --c-bg:#F3F5F5; --c-surface:#FFFFFF; --c-border:#E2E7E7;
+  --c-text:#16221F; --c-text2:#5E706C; --c-muted:#93A39E;
+  --c-up:var(--up); --c-down:var(--down);
+  --c-warn:var(--warn); --c-warnbg:var(--warn-bg); background:#F3F5F5;
+}
+.v2 .ui-scope.dark{
+  --c-accent:#2DD4BF; --c-accent-on:#06201C;
+  --c-bg:#0B1211; --c-surface:#15201E; --c-border:#25332F;
+  --c-text:#E8F0EE; --c-text2:#93A6A1; --c-muted:#62756F;
+  --c-up:var(--up-dk); --c-down:var(--down-dk);
+  --c-warn:var(--warn-dk); --c-warnbg:var(--warn-bg-dk); background:#0B1211;
+}
+
+/* ============================ VARIATION 3 ============================
+   Emerald / Forest
+   ACCENT  light #059669   dark #34D399
+   Register: 단단하고 성장 지향적 — "조급함 없이 천천히 자라는"
+   Neutrals: warm-neutral sage gray
+   bg #F4F5F3  surface #FFFFFF  border #E5E8E2  text #1A2418  text2 #62705C
+   dark: bg #0C120B  surface #162014  border #263326  text #EAF1E8  text2 #98A693
+==================================================================== */
+.v3 .ui-scope.light{
+  --c-accent:#059669; --c-accent-on:#FFFFFF;
+  --c-bg:#F4F5F3; --c-surface:#FFFFFF; --c-border:#E5E8E2;
+  --c-text:#1A2418; --c-text2:#62705C; --c-muted:#97A391;
+  --c-up:var(--up); --c-down:var(--down);
+  --c-warn:var(--warn); --c-warnbg:var(--warn-bg); background:#F4F5F3;
+}
+.v3 .ui-scope.dark{
+  --c-accent:#34D399; --c-accent-on:#04210F;
+  --c-bg:#0C120B; --c-surface:#162014; --c-border:#263326;
+  --c-text:#EAF1E8; --c-text2:#98A693; --c-muted:#647062;
+  --c-up:var(--up-dk); --c-down:var(--down-dk);
+  --c-warn:var(--warn-dk); --c-warnbg:var(--warn-bg-dk); background:#0C120B;
+}
+
+/* ============================ VARIATION 4 ============================
+   Warm Amber / Gold
+   ACCENT  light #D97706   dark #FBBF24
+   Register: 따뜻하고 권유적인 — "다그치지 않고 곁에서 건네는"
+   Neutrals: warm gray (stone)
+   bg #F6F5F2  surface #FFFFFF  border #EBE7E0  text #231E16  text2 #6E665A
+   dark: bg #14110B  surface #201C14  border #332D22  text #F2EEE5  text2 #A69D8B
+   NOTE: amber accent button uses DARK text for AA contrast.
+==================================================================== */
+.v4 .ui-scope.light{
+  --c-accent:#D97706; --c-accent-on:#FFFFFF;
+  --c-bg:#F6F5F2; --c-surface:#FFFFFF; --c-border:#EBE7E0;
+  --c-text:#231E16; --c-text2:#6E665A; --c-muted:#A39A8B;
+  --c-up:var(--up); --c-down:var(--down);
+  --c-warn:var(--warn); --c-warnbg:var(--warn-bg); background:#F6F5F2;
+}
+.v4 .ui-scope.dark{
+  --c-accent:#FBBF24; --c-accent-on:#241A04;
+  --c-bg:#14110B; --c-surface:#201C14; --c-border:#332D22;
+  --c-text:#F2EEE5; --c-text2:#A69D8B; --c-muted:#6E665A;
+  --c-up:var(--up-dk); --c-down:var(--down-dk);
+  --c-warn:var(--warn-dk); --c-warnbg:var(--warn-bg-dk); background:#14110B;
+}
+
+/* ============================ VARIATION 5 ============================
+   Near-black Ink (monochrome minimal — graphite accent)
+   ACCENT  light #27272A   dark #E4E4E7
+   Register: 가장 절제된 — "도구가 사라지고 판단만 남는"
+   Neutrals: pure neutral gray (zinc)
+   bg #F4F4F5  surface #FFFFFF  border #E4E4E7  text #18181B  text2 #71717A
+   dark: bg #0A0A0B  surface #161618  border #2A2A2E  text #FAFAFA  text2 #A1A1AA
+==================================================================== */
+.v5 .ui-scope.light{
+  --c-accent:#27272A; --c-accent-on:#FFFFFF;
+  --c-bg:#F4F4F5; --c-surface:#FFFFFF; --c-border:#E4E4E7;
+  --c-text:#18181B; --c-text2:#71717A; --c-muted:#A1A1AA;
+  --c-up:var(--up); --c-down:var(--down);
+  --c-warn:var(--warn); --c-warnbg:var(--warn-bg); background:#F4F4F5;
+}
+.v5 .ui-scope.dark{
+  --c-accent:#E4E4E7; --c-accent-on:#161618;
+  --c-bg:#0A0A0B; --c-surface:#161618; --c-border:#2A2A2E;
+  --c-text:#FAFAFA; --c-text2:#A1A1AA; --c-muted:#6B6B70;
+  --c-up:var(--up-dk); --c-down:var(--down-dk);
+  --c-warn:var(--warn-dk); --c-warnbg:var(--warn-bg-dk); background:#0A0A0B;
+}
+</style>
+
+<!-- ============================== V1 ============================== -->
+<div class="grid" style="margin-top:0">
+
+<section class="variation v1">
+  <div class="var-head">
+    <div class="vname"><span class="swatch" style="background:#4F46E5"></span>
+      <h2>1 · Deep Indigo / Violet</h2></div>
+    <p class="reg">신뢰감 있고 차분한 — "전문가의 조용한 확신"</p>
+    <p class="hexline">accent #4F46E5 (light) · #818CF8 (dark) · cool gray neutrals</p>
+  </div>
+  <div class="tokens">
+    <div class="chip"><div class="sw" style="background:#F5F5F8"></div><div class="meta"><span class="role">background</span><span class="hex">#F5F5F8</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px #ECECEE"></div><div class="meta"><span class="role">surface / card</span><span class="hex">#FFFFFF</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5E5EC"></div><div class="meta"><span class="role">border</span><span class="hex">#E5E5EC</span></div></div>
+    <div class="chip"><div class="sw" style="background:#1A1A2E"></div><div class="meta"><span class="role">text-primary</span><span class="hex">#1A1A2E</span></div></div>
+    <div class="chip"><div class="sw" style="background:#6B6B80"></div><div class="meta"><span class="role">text-secondary</span><span class="hex">#6B6B80</span></div></div>
+    <div class="chip"><div class="sw" style="background:#4F46E5"></div><div class="meta"><span class="role">brand-accent</span><span class="hex">#4F46E5</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5383B"></div><div class="meta"><span class="role">up · 상승</span><span class="hex">#E5383B</span></div></div>
+    <div class="chip"><div class="sw" style="background:#2563EB"></div><div class="meta"><span class="role">down · 하락</span><span class="hex">#2563EB</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FEF3C7"></div><div class="meta"><span class="role">warning / as-of</span><span class="hex">#B45309</span></div></div>
+    <div class="chip"><div class="sw" style="background:#9A9AAE"></div><div class="meta"><span class="role">disclaimer/muted</span><span class="hex">#9A9AAE</span></div></div>
+  </div>
+  <div class="snippets">
+    <div><p class="snip-label">Light</p>
+      <div class="ui-scope light">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+    <div><p class="snip-label">Dark</p>
+      <div class="ui-scope dark">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== V2 ============================== -->
+<section class="variation v2">
+  <div class="var-head">
+    <div class="vname"><span class="swatch" style="background:#0D9488"></span>
+      <h2>2 · Teal</h2></div>
+    <p class="reg">맑고 분석적인 — "감정을 식히는 차분한 명료함"</p>
+    <p class="hexline">accent #0D9488 (light) · #2DD4BF (dark) · cool slate neutrals</p>
+  </div>
+  <div class="tokens">
+    <div class="chip"><div class="sw" style="background:#F3F5F5"></div><div class="meta"><span class="role">background</span><span class="hex">#F3F5F5</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px #ECECEE"></div><div class="meta"><span class="role">surface / card</span><span class="hex">#FFFFFF</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E2E7E7"></div><div class="meta"><span class="role">border</span><span class="hex">#E2E7E7</span></div></div>
+    <div class="chip"><div class="sw" style="background:#16221F"></div><div class="meta"><span class="role">text-primary</span><span class="hex">#16221F</span></div></div>
+    <div class="chip"><div class="sw" style="background:#5E706C"></div><div class="meta"><span class="role">text-secondary</span><span class="hex">#5E706C</span></div></div>
+    <div class="chip"><div class="sw" style="background:#0D9488"></div><div class="meta"><span class="role">brand-accent</span><span class="hex">#0D9488</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5383B"></div><div class="meta"><span class="role">up · 상승</span><span class="hex">#E5383B</span></div></div>
+    <div class="chip"><div class="sw" style="background:#2563EB"></div><div class="meta"><span class="role">down · 하락</span><span class="hex">#2563EB</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FEF3C7"></div><div class="meta"><span class="role">warning / as-of</span><span class="hex">#B45309</span></div></div>
+    <div class="chip"><div class="sw" style="background:#93A39E"></div><div class="meta"><span class="role">disclaimer/muted</span><span class="hex">#93A39E</span></div></div>
+  </div>
+  <div class="snippets">
+    <div><p class="snip-label">Light</p>
+      <div class="ui-scope light">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+    <div><p class="snip-label">Dark</p>
+      <div class="ui-scope dark">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== V3 ============================== -->
+<section class="variation v3">
+  <div class="var-head">
+    <div class="vname"><span class="swatch" style="background:#059669"></span>
+      <h2>3 · Emerald / Forest</h2></div>
+    <p class="reg">단단하고 성장 지향적 — "조급함 없이 천천히 자라는"</p>
+    <p class="hexline">accent #059669 (light) · #34D399 (dark) · warm sage neutrals</p>
+  </div>
+  <div class="tokens">
+    <div class="chip"><div class="sw" style="background:#F4F5F3"></div><div class="meta"><span class="role">background</span><span class="hex">#F4F5F3</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px #ECECEE"></div><div class="meta"><span class="role">surface / card</span><span class="hex">#FFFFFF</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5E8E2"></div><div class="meta"><span class="role">border</span><span class="hex">#E5E8E2</span></div></div>
+    <div class="chip"><div class="sw" style="background:#1A2418"></div><div class="meta"><span class="role">text-primary</span><span class="hex">#1A2418</span></div></div>
+    <div class="chip"><div class="sw" style="background:#62705C"></div><div class="meta"><span class="role">text-secondary</span><span class="hex">#62705C</span></div></div>
+    <div class="chip"><div class="sw" style="background:#059669"></div><div class="meta"><span class="role">brand-accent</span><span class="hex">#059669</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5383B"></div><div class="meta"><span class="role">up · 상승</span><span class="hex">#E5383B</span></div></div>
+    <div class="chip"><div class="sw" style="background:#2563EB"></div><div class="meta"><span class="role">down · 하락</span><span class="hex">#2563EB</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FEF3C7"></div><div class="meta"><span class="role">warning / as-of</span><span class="hex">#B45309</span></div></div>
+    <div class="chip"><div class="sw" style="background:#97A391"></div><div class="meta"><span class="role">disclaimer/muted</span><span class="hex">#97A391</span></div></div>
+  </div>
+  <div class="snippets">
+    <div><p class="snip-label">Light</p>
+      <div class="ui-scope light">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+    <div><p class="snip-label">Dark</p>
+      <div class="ui-scope dark">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== V4 ============================== -->
+<section class="variation v4">
+  <div class="var-head">
+    <div class="vname"><span class="swatch" style="background:#D97706"></span>
+      <h2>4 · Warm Amber / Gold</h2></div>
+    <p class="reg">따뜻하고 권유적인 — "다그치지 않고 곁에서 건네는"</p>
+    <p class="hexline">accent #D97706 (light) · #FBBF24 (dark) · warm stone neutrals</p>
+  </div>
+  <div class="tokens">
+    <div class="chip"><div class="sw" style="background:#F6F5F2"></div><div class="meta"><span class="role">background</span><span class="hex">#F6F5F2</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px #ECECEE"></div><div class="meta"><span class="role">surface / card</span><span class="hex">#FFFFFF</span></div></div>
+    <div class="chip"><div class="sw" style="background:#EBE7E0"></div><div class="meta"><span class="role">border</span><span class="hex">#EBE7E0</span></div></div>
+    <div class="chip"><div class="sw" style="background:#231E16"></div><div class="meta"><span class="role">text-primary</span><span class="hex">#231E16</span></div></div>
+    <div class="chip"><div class="sw" style="background:#6E665A"></div><div class="meta"><span class="role">text-secondary</span><span class="hex">#6E665A</span></div></div>
+    <div class="chip"><div class="sw" style="background:#D97706"></div><div class="meta"><span class="role">brand-accent</span><span class="hex">#D97706</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5383B"></div><div class="meta"><span class="role">up · 상승</span><span class="hex">#E5383B</span></div></div>
+    <div class="chip"><div class="sw" style="background:#2563EB"></div><div class="meta"><span class="role">down · 하락</span><span class="hex">#2563EB</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FEF3C7"></div><div class="meta"><span class="role">warning / as-of</span><span class="hex">#B45309</span></div></div>
+    <div class="chip"><div class="sw" style="background:#A39A8B"></div><div class="meta"><span class="role">disclaimer/muted</span><span class="hex">#A39A8B</span></div></div>
+  </div>
+  <div class="snippets">
+    <div><p class="snip-label">Light</p>
+      <div class="ui-scope light">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+    <div><p class="snip-label">Dark</p>
+      <div class="ui-scope dark">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== V5 ============================== -->
+<section class="variation v5">
+  <div class="var-head">
+    <div class="vname"><span class="swatch" style="background:#27272A"></span>
+      <h2>5 · Near-black Ink (monochrome)</h2></div>
+    <p class="reg">가장 절제된 — "도구가 사라지고 판단만 남는"</p>
+    <p class="hexline">accent #27272A (light) · #E4E4E7 (dark) · pure neutral zinc</p>
+  </div>
+  <div class="tokens">
+    <div class="chip"><div class="sw" style="background:#F4F4F5"></div><div class="meta"><span class="role">background</span><span class="hex">#F4F4F5</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FFFFFF;box-shadow:inset 0 0 0 1px #ECECEE"></div><div class="meta"><span class="role">surface / card</span><span class="hex">#FFFFFF</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E4E4E7"></div><div class="meta"><span class="role">border</span><span class="hex">#E4E4E7</span></div></div>
+    <div class="chip"><div class="sw" style="background:#18181B"></div><div class="meta"><span class="role">text-primary</span><span class="hex">#18181B</span></div></div>
+    <div class="chip"><div class="sw" style="background:#71717A"></div><div class="meta"><span class="role">text-secondary</span><span class="hex">#71717A</span></div></div>
+    <div class="chip"><div class="sw" style="background:#27272A"></div><div class="meta"><span class="role">brand-accent</span><span class="hex">#27272A</span></div></div>
+    <div class="chip"><div class="sw" style="background:#E5383B"></div><div class="meta"><span class="role">up · 상승</span><span class="hex">#E5383B</span></div></div>
+    <div class="chip"><div class="sw" style="background:#2563EB"></div><div class="meta"><span class="role">down · 하락</span><span class="hex">#2563EB</span></div></div>
+    <div class="chip"><div class="sw" style="background:#FEF3C7"></div><div class="meta"><span class="role">warning / as-of</span><span class="hex">#B45309</span></div></div>
+    <div class="chip"><div class="sw" style="background:#A1A1AA"></div><div class="meta"><span class="role">disclaimer/muted</span><span class="hex">#A1A1AA</span></div></div>
+  </div>
+  <div class="snippets">
+    <div><p class="snip-label">Light</p>
+      <div class="ui-scope light">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+    <div><p class="snip-label">Dark</p>
+      <div class="ui-scope dark">
+        <div class="rcard">
+          <div class="ticker-row">
+            <div><span class="tk">NVDA<small>NVIDIA Corp</small></span></div>
+            <div class="px"><div class="val">$172.41</div><div class="chg up">▲ +3.92 (+2.3%)</div></div>
+          </div>
+          <span class="asof"><span class="dot"></span>as of 16:00 EOD · 6/20</span>
+          <hr class="hr">
+          <div class="thesis">
+            <div class="blk bull"><p class="h bull">상승 논리</p><p class="t">데이터센터 GPU 수요가 가이던스를 계속 상회. 차세대 Blackwell 물량이 다음 분기 매출로 인식될 여지.</p></div>
+            <div class="blk bear"><p class="h bear">하락 리스크</p><p class="t">밸류에이션이 선반영 상태. 대형 고객사의 자체 칩 전환과 수출 규제가 단기 변동성 요인.</p></div>
+          </div>
+          <p class="disc"><span class="i">ⓘ</span><span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아니며 정확성을 보장하지 않습니다.</span></p>
+          <button class="btn">30초 체크 기록</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

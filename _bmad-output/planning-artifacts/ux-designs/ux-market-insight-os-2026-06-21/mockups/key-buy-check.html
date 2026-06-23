@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매수 전 30초 체크 · NVDA</title>
+<style>
+/*
+  SPINE COVERAGE — key-buy-check.html
+  IA: 매수 30초 체크 (EXPERIENCE.md §Information Architecture)
+  Primitives: 점진 공개(progressive disclosure) · 칩 입력 + "기타" · 의도된 마찰("계획인가 감정인가") · 저마찰(타이핑 선택)
+  Flows: Flow 1 step 3 (감정 한 번 탭 → 질문 → 나머지 선택)
+  FRs illustrated:
+    FR10 이유/최대 리스크/투자기간 칩 입력
+    FR11 가격·지표 스냅샷 strip (as-of 동반)
+    FR14/FR18 선택적 목표가·손절
+    NFR-U2 의도된 마찰(비강제 micro-intervention)
+    NFR-U4 "기타(직접)" 칩(거짓 기록 방지) · "타이핑은 선택" 가시화
+  A11y: 칩 선택 aria-pressed + 비색 큐(체크/링), 탭 타깃 ≥44px (DESIGN.md §chip / Accessibility Floor)
+  Two side-by-side states in one file: (a) 감정 칩 한 줄만  (b) 감정 선택 후 펼침
+  Tokens: primary #4F46E5 (선택 칩 채움/white text), up #E5383B(▲+) up-text #C81E1E, down #2563EB(▼−),
+    warning-bg #FEF3C7 / warning-text #9A3E07 (as-of), disclaimer #52525B
+*/
+:root{
+  --primary:#4F46E5; --primary-fg:#FFFFFF;
+  --up:#E5383B; --up-text:#C81E1E; --down:#2563EB;
+  --bg:#F5F5F8; --surface:#FFFFFF; --border:#E5E5EC;
+  --text-1:#1A1A2E; --text-2:#6B6B80; --muted:#9A9AAE;
+  --disclaimer:#52525B; --warn-text:#9A3E07; --warn-bg:#FEF3C7;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#E9E9F0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Segoe UI',Roboto,sans-serif;color:var(--text-1);-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.stage{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;padding:28px 16px}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.col .caption{font-size:12px;font-weight:700;color:#3F3F46}
+.col .caption span{font-weight:600;color:var(--text-2)}
+
+/* phone = bottom sheet over dimmed bg */
+.phone{width:390px;background:#23232F;border-radius:28px;overflow:hidden;box-shadow:0 12px 48px rgba(26,26,46,.22)}
+.dim{padding:64px 0 0;background:linear-gradient(to bottom,rgba(26,26,46,.45),rgba(26,26,46,.55))}
+.sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:8px 18px 22px}
+.grabber{width:38px;height:4px;background:var(--border);border-radius:9999px;margin:6px auto 14px}
+.sheet h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.sheet .sub{font-size:11px;font-weight:600;color:var(--text-2);margin-top:3px}
+
+/* snapshot strip FR11 */
+.snap{display:flex;align-items:center;gap:10px;margin-top:14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.snap .tk{font-size:13px;font-weight:700}
+.snap .pr{font-size:14px;font-weight:700;color:var(--up)}
+.snap .cg{font-size:11px;font-weight:700;color:var(--up-text)}
+.snap .pe{font-size:11px;font-weight:600;color:var(--text-2);margin-left:auto}
+.asof{display:inline-flex;align-items:center;gap:4px;margin-top:8px;background:var(--warn-bg);color:var(--warn-text);font-size:11px;font-weight:600;padding:3px 9px;border-radius:9999px}
+
+.block{margin-top:18px}
+.blk-label{font-size:11px;font-weight:700;color:var(--text-1);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.opt{font-size:11px;font-weight:600;color:var(--text-2);margin-left:4px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 16px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);border-radius:9999px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--primary);color:var(--primary-fg);border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.18)}
+.chip[aria-pressed="true"] .ck{display:inline}
+.chip .ck{display:none;font-weight:800}
+.chip.other{border-style:dashed;color:var(--text-1)}
+
+/* micro intervention */
+.micro{margin-top:16px;background:#EEF0FF;border:1px solid #D6D9FF;border-radius:10px;padding:13px 14px}
+.micro .q{font-size:14px;font-weight:700;color:#312E81;line-height:1.45}
+.micro .d{font-size:11px;font-weight:600;color:#4F46E5;margin-top:5px;line-height:1.5}
+
+.typing-note{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:11px;font-weight:600;color:var(--disclaimer)}
+
+.opt-fields{margin-top:18px;border-top:1px dashed var(--border);padding-top:16px}
+.opt-fields .ohead{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:12px}
+.field{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.field label{font-size:13px;font-weight:600;color:var(--text-1);flex:0 0 64px}
+.field .inp{flex:1;min-height:44px;border:1px solid var(--border);background:var(--bg);border-radius:8px;padding:0 12px;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--muted)}
+.field .inp.tgt{color:var(--up-text)}
+.field .inp.stop{color:var(--down)}
+
+.disclaimer{display:flex;gap:6px;align-items:flex-start;margin-top:16px;font-size:11px;line-height:1.5;color:var(--disclaimer)}
+.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:14px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary.disabled{background:var(--border);color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- STATE (a): 감정 칩 한 줄만 -->
+  <div class="col">
+    <div class="caption">상태 (a) · <span>첫 화면 — 감정 한 줄만</span></div>
+    <div class="phone">
+      <div class="dim">
+        <div class="sheet">
+          <div class="grabber"></div>
+          <h1>매수 전 30초 체크</h1>
+          <div class="sub">사기 전에 딱 한 박자. 지금 마음부터 가볍게.</div>
+
+          <div class="snap">
+            <span class="tk">NVDA</span>
+            <span class="pr num">$138.07</span>
+            <span class="cg num"><span aria-hidden="true">▲</span> +3.15%</span>
+            <span class="pe num">선행 P/E 38</span>
+          </div>
+          <div class="asof"><span aria-hidden="true">⏱</span> as of 16:00 EOD · 6/20 · 실시간 아님</div>
+
+          <div class="block">
+            <div class="blk-label">지금 마음에 가까운 건?</div>
+            <div class="chips" role="group" aria-label="감정 선택">
+              <button class="chip" type="button" aria-pressed="false">차분함</button>
+              <button class="chip" type="button" aria-pressed="false">확신</button>
+              <button class="chip" type="button" aria-pressed="false">FOMO</button>
+              <button class="chip" type="button" aria-pressed="false">불안</button>
+            </div>
+          </div>
+
+          <div class="typing-note"><span aria-hidden="true">⌨</span> 탭으로 골라요 · 타이핑은 선택</div>
+          <button class="btn-primary disabled" type="button" aria-disabled="true">감정을 먼저 골라주세요</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE (b): 감정 선택 후 펼침 -->
+  <div class="col">
+    <div class="caption">상태 (b) · <span>FOMO 선택 후 — 점진 공개</span></div>
+    <div class="phone">
+      <div class="dim">
+        <div class="sheet">
+          <div class="grabber"></div>
+          <h1>매수 전 30초 체크</h1>
+          <div class="sub">사기 전에 딱 한 박자. 지금 마음부터 가볍게.</div>
+
+          <div class="snap">
+            <span class="tk">NVDA</span>
+            <span class="pr num">$138.07</span>
+            <span class="cg num"><span aria-hidden="true">▲</span> +3.15%</span>
+            <span class="pe num">선행 P/E 38</span>
+          </div>
+          <div class="asof"><span aria-hidden="true">⏱</span> as of 16:00 EOD · 6/20 · 실시간 아님</div>
+
+          <div class="block">
+            <div class="blk-label">지금 마음에 가까운 건?</div>
+            <div class="chips" role="group" aria-label="감정 선택">
+              <button class="chip" type="button" aria-pressed="false">차분함</button>
+              <button class="chip" type="button" aria-pressed="false">확신</button>
+              <button class="chip" type="button" aria-pressed="true"><span class="ck" aria-hidden="true">✓</span> FOMO</button>
+              <button class="chip" type="button" aria-pressed="false">불안</button>
+            </div>
+          </div>
+
+          <!-- intentional friction · non-coercive -->
+          <div class="micro" role="note" aria-live="polite">
+            <div class="q">지금 계획인가요, 감정인가요?</div>
+            <div class="d">막지 않아요. 12% 급등 직후 진입이에요 — 그래도 사면, 그 결정도 한 달 뒤 같이 비춰드릴게요.</div>
+          </div>
+
+          <div class="block">
+            <div class="blk-label">매수 이유 <span class="opt">(선택 가능 · 복수)</span></div>
+            <div class="chips" role="group" aria-label="매수 이유">
+              <button class="chip" type="button" aria-pressed="true"><span class="ck" aria-hidden="true">✓</span> 실적 기대</button>
+              <button class="chip" type="button" aria-pressed="false">차트 흐름</button>
+              <button class="chip" type="button" aria-pressed="false">뉴스</button>
+              <button class="chip other" type="button" aria-pressed="false">기타(직접)</button>
+            </div>
+          </div>
+
+          <div class="block">
+            <div class="blk-label">내가 보는 최대 리스크</div>
+            <div class="chips" role="group" aria-label="최대 리스크">
+              <button class="chip" type="button" aria-pressed="true"><span class="ck" aria-hidden="true">✓</span> 고평가</button>
+              <button class="chip" type="button" aria-pressed="false">규제</button>
+              <button class="chip" type="button" aria-pressed="false">경쟁</button>
+              <button class="chip other" type="button" aria-pressed="false">기타(직접)</button>
+            </div>
+          </div>
+
+          <div class="block">
+            <div class="blk-label">투자 기간</div>
+            <div class="chips" role="group" aria-label="투자 기간">
+              <button class="chip" type="button" aria-pressed="false">~1주</button>
+              <button class="chip" type="button" aria-pressed="true"><span class="ck" aria-hidden="true">✓</span> 1~6개월</button>
+              <button class="chip" type="button" aria-pressed="false">1년+</button>
+              <button class="chip other" type="button" aria-pressed="false">기타(직접)</button>
+            </div>
+          </div>
+
+          <div class="opt-fields">
+            <div class="ohead">목표가 · 손절 (선택 — 적으면 복기가 더 정확해져요)</div>
+            <div class="field">
+              <label for="tgt">목표가</label>
+              <div class="inp tgt num" id="tgt"><span aria-hidden="true">▲</span> $165 입력</div>
+            </div>
+            <div class="field">
+              <label for="stp">손절선</label>
+              <div class="inp stop num" id="stp"><span aria-hidden="true">▼</span> −15% 입력</div>
+            </div>
+          </div>
+
+          <div class="typing-note"><span aria-hidden="true">⌨</span> 전부 탭으로 끝나요 · 타이핑은 선택</div>
+
+          <div class="disclaimer">
+            <span aria-hidden="true">ⓘ</span>
+            <span>AI가 공개 데이터로 정리한 참고용입니다. 투자 권유가 아닙니다.</span>
+          </div>
+
+          <button class="btn-primary" type="button">이 판단 30초로 남기기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

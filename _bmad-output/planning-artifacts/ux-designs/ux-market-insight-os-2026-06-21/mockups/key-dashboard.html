@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대시보드 · Market Insight OS</title>
+<style>
+/*
+  SPINE COVERAGE — key-dashboard.html
+  IA: 대시보드 + Daily Brief 진입 + Insight Score(거울) (EXPERIENCE.md §Information Architecture)
+  Flows: Flow J3 (Daily Brief 진입), Flow 1 step 6 (Score 거울 패턴)
+  FRs illustrated:
+    FR27 주요 지수·거시 (한국식 색 + 부호/화살표 글리프)
+    FR28 Daily Brief 라이트 진입(상단)
+    FR30 미완료 복기 알림 카드
+    FR25-26 Insight Score = 거울(채점 아님, 프로세스 완수 패턴 문장)
+    FR32/34 as-of 배지 · per-output 면책 (Score는 AI 출력)
+  Components: score-mirror, asof-badge, disclaimer (DESIGN.md §Components)
+  Tokens: up #E5383B fill / up-text #C81E1E (▲+), down #2563EB (▼−), primary #4F46E5,
+    disclaimer #52525B, warning-bg/text amber.  destructive 삭제는 여기 없음(관심종목 편집 화면에).
+  Style note: 모바일 단일 컬럼 — 데스크톱은 동일 코드에서 멀티 컬럼으로 확장(EXPERIENCE.md §Foundation).
+    (예: @media min-width:768px → .grid를 2~3 컬럼 그리드로, Score를 우측 사이드 레일로.)
+*/
+:root{
+  --primary:#4F46E5; --primary-fg:#FFFFFF;
+  --up:#E5383B; --up-text:#C81E1E; --down:#2563EB;
+  --bg:#F5F5F8; --surface:#FFFFFF; --border:#E5E5EC;
+  --text-1:#1A1A2E; --text-2:#6B6B80; --muted:#9A9AAE;
+  --disclaimer:#52525B; --warn-text:#9A3E07; --warn-bg:#FEF3C7;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Segoe UI',Roboto,sans-serif;color:var(--text-1);-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.phone{max-width:390px;margin:24px auto;background:var(--bg);min-height:800px;border:1px solid var(--border);border-radius:28px;overflow:hidden;box-shadow:0 8px 40px rgba(26,26,46,.08);display:flex;flex-direction:column}
+.scroll{flex:1;padding:16px 16px 16px;overflow:auto}
+
+.head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.head h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.head .date{font-size:11px;font-weight:600;color:var(--text-2)}
+
+/* Daily Brief light entry FR28 */
+.brief{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 14px;margin-bottom:14px}
+.brief .ic{width:34px;height:34px;flex:0 0 auto;border-radius:8px;background:#EEF0FF;display:flex;align-items:center;justify-content:center;font-size:17px}
+.brief .tx .t{font-size:13px;font-weight:700;line-height:1.4}
+.brief .tx .s{font-size:11px;font-weight:600;color:var(--text-2);margin-top:2px;line-height:1.4}
+.brief .go{margin-left:auto;font-size:12px;font-weight:700;color:var(--primary)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.sec-h{font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.sec-h .asof{background:var(--warn-bg);color:var(--warn-text);font-weight:600;padding:2px 8px;border-radius:9999px}
+
+/* indices grid FR27 */
+.idx{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.idx .cell{border:1px solid var(--border);border-radius:8px;padding:10px 11px}
+.idx .nm{font-size:11px;font-weight:600;color:var(--text-2)}
+.idx .vl{font-size:15px;font-weight:700;margin-top:3px}
+.idx .dl{font-size:11px;font-weight:700;margin-top:2px}
+.up{color:var(--up-text)} .upv{color:var(--up)} .down{color:var(--down)}
+
+/* watchlist FR */
+.wl li{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.wl li:last-child{border-bottom:none}
+.wl .tk{font-size:14px;font-weight:700;min-width:54px}
+.wl .ko{font-size:11px;font-weight:600;color:var(--text-2)}
+.wl .pr{margin-left:auto;text-align:right}
+.wl .pr .p{font-size:14px;font-weight:700}
+.wl .pr .c{font-size:11px;font-weight:700;margin-top:1px}
+
+/* reflection due FR30 */
+.due{background:#FFF8F0;border:1px solid #F4D9B8;border-radius:10px;padding:14px;margin-bottom:14px}
+.due .top{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#9A3E07;margin-bottom:6px}
+.due .body{font-size:13px;font-weight:600;line-height:1.5;color:var(--text-1)}
+.due .body b{font-weight:800}
+.due .act{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin-top:11px;padding:0 16px;background:var(--primary);color:var(--primary-fg);border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer}
+
+/* Insight Score MIRROR FR25-26 — pattern, not grade */
+.mirror{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.mirror .label{font-size:11px;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.mirror .lead{font-size:14px;font-weight:700;line-height:1.5;color:var(--text-1)}
+.mirror .lead b{font-weight:800}
+.mirror .why{font-size:12px;font-weight:600;color:var(--text-2);line-height:1.5;margin-top:6px}
+.bars{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-row .bn{flex:0 0 96px;font-size:11px;font-weight:600;color:var(--text-2)}
+.track{flex:1;height:8px;background:var(--bg);border:1px solid var(--border);border-radius:9999px;overflow:hidden}
+.fill{height:100%;background:var(--primary);border-radius:9999px}
+.bar-row .bv{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--text-1)}
+.mirror .disclaimer{display:flex;gap:6px;align-items:flex-start;margin-top:14px;font-size:11px;line-height:1.5;color:var(--disclaimer)}
+
+/* bottom tab bar */
+.tabbar{display:flex;border-top:1px solid var(--border);background:var(--surface)}
+.tabbar a{flex:1;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none}
+.tabbar a .ti{font-size:18px;line-height:1}
+.tabbar a.active{color:var(--primary)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="scroll">
+
+    <div class="head">
+      <h1>대시보드</h1>
+      <span class="date num">6/21 (토)</span>
+    </div>
+
+    <!-- FR28 Daily Brief light entry -->
+    <a class="brief" href="#" aria-label="오늘의 Daily Brief 열기">
+      <span class="ic" aria-hidden="true">📰</span>
+      <span class="tx">
+        <span class="t">오늘의 Daily Brief</span>
+        <span class="s">금리 인하 기대 · 기술주 강세 — 내 관심종목 영향 2건</span>
+      </span>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <!-- FR30 미완료 복기 알림 -->
+    <div class="due" role="note">
+      <div class="top"><span aria-hidden="true">🪞</span> 미완료 복기 1건</div>
+      <div class="body">3/19 <b>TSLA</b> 매수 기록이 한 달이 지났어요. 그때 적은 논리와 지금 결과를 비춰볼까요?</div>
+      <button class="due act" type="button">복기 보기</button>
+    </div>
+
+    <!-- FR27 지수·거시 (한국식 색 + 글리프) -->
+    <div class="card">
+      <div class="sec-h"><span>주요 지수 · 거시</span><span class="asof">as of 16:00 EOD · 6/20</span></div>
+      <div class="idx">
+        <div class="cell">
+          <div class="nm">S&amp;P 500</div>
+          <div class="vl num upv">5,487.03</div>
+          <div class="dl num up"><span aria-hidden="true">▲</span> +0.62%<span class="sr">상승</span></div>
+        </div>
+        <div class="cell">
+          <div class="nm">나스닥</div>
+          <div class="vl num upv">17,862.2</div>
+          <div class="dl num up"><span aria-hidden="true">▲</span> +0.95%<span class="sr">상승</span></div>
+        </div>
+        <div class="cell">
+          <div class="nm">미 10년물 금리</div>
+          <div class="vl num down">4.21%</div>
+          <div class="dl num down"><span aria-hidden="true">▼</span> −0.04%p<span class="sr">하락</span></div>
+        </div>
+        <div class="cell">
+          <div class="nm">달러인덱스(DXY)</div>
+          <div class="vl num down">104.31</div>
+          <div class="dl num down"><span aria-hidden="true">▼</span> −0.18%<span class="sr">하락</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 관심종목 변화 -->
+    <div class="card">
+      <div class="sec-h"><span>관심종목 변화</span><span class="asof">as of 16:00 EOD</span></div>
+      <ul class="wl" aria-label="관심종목">
+        <li>
+          <span class="tk">NVDA</span><span class="ko">엔비디아</span>
+          <span class="pr"><span class="p num upv">$138.07</span><span class="c num up"><span aria-hidden="true">▲</span> +3.15%</span></span>
+        </li>
+        <li>
+          <span class="tk">AAPL</span><span class="ko">애플</span>
+          <span class="pr"><span class="p num down">$207.49</span><span class="c num down"><span aria-hidden="true">▼</span> −0.82%</span></span>
+        </li>
+        <li>
+          <span class="tk">TSLA</span><span class="ko">테슬라</span>
+          <span class="pr"><span class="p num upv">$183.01</span><span class="c num up"><span aria-hidden="true">▲</span> +1.44%</span></span>
+        </li>
+        <li>
+          <span class="tk">MSFT</span><span class="ko">마이크로소프트</span>
+          <span class="pr"><span class="p num down">$449.78</span><span class="c num down"><span aria-hidden="true">▼</span> −0.31%</span></span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- FR25-26 Insight Score 거울 -->
+    <div class="mirror">
+      <div class="label"><span aria-hidden="true">🪞</span> Insight Score · 이번 달 내 판단 거울</div>
+      <div class="lead">매수 5건 중 <b>2건만</b> 리스크를 사전에 적어두셨어요.</div>
+      <div class="why">점수가 아니라 패턴이에요. 기록이 쌓일수록 복기가 더 정확해져요.</div>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bn">리스크 사전 기입</span>
+          <span class="track"><span class="fill" style="width:40%"></span></span>
+          <span class="bv num">2/5</span>
+        </div>
+        <div class="bar-row">
+          <span class="bn">기간 명시</span>
+          <span class="track"><span class="fill" style="width:80%"></span></span>
+          <span class="bv num">4/5</span>
+        </div>
+        <div class="bar-row">
+          <span class="bn">손절선 설정</span>
+          <span class="track"><span class="fill" style="width:20%"></span></span>
+          <span class="bv num">1/5</span>
+        </div>
+      </div>
+      <div class="disclaimer">
+        <span aria-hidden="true">ⓘ</span>
+        <span>당신의 기록만으로 만든 참고용 패턴입니다. 평가·등수가 아닙니다.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="tabbar" aria-label="하단 내비게이션">
+    <a href="#" class="active" aria-current="page"><span class="ti" aria-hidden="true">▦</span>대시보드</a>
+    <a href="#"><span class="ti" aria-hidden="true">★</span>관심종목</a>
+    <a href="#"><span class="ti" aria-hidden="true">🪞</span>Score</a>
+    <a href="#"><span class="ti" aria-hidden="true">📰</span>Brief</a>
+  </nav>
+</div>
+</body>
+</html>

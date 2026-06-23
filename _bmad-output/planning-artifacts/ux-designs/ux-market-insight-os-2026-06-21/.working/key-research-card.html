@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>리서치 카드 · NVDA</title>
+<style>
+/*
+  SPINE COVERAGE — key-research-card.html
+  IA: 리서치 카드 (EXPERIENCE.md §Information Architecture)
+  Flows: Flow 1 (민수 성공 루프 step 2), Flow J5 (Lurker→첫 기록, step 3 비강제 넛지)
+  FRs illustrated:
+    FR6  상승논리 / 하락리스크 분리(좌측 컬러 보더)
+    FR7  출처 표기(공시/뉴스/재무)
+    FR9  실적 체크포인트 라인
+    FR31 비강제 넛지(lurker → 첫 기록)
+    FR32 as-of 신선도 배지 (16:00 EOD · 실시간 아님)
+    FR34 per-output AI 면책 캡션
+  Components: research-card, asof-badge, disclaimer, button-primary (DESIGN.md §Components)
+  Tokens (post-fix): up fill #E5383B / up-text #C81E1E (▲+), down #2563EB (▼−),
+    primary #4F46E5(white text), disclaimer-fg #52525B, warning-text #9A3E07 / warning-bg #FEF3C7
+*/
+:root{
+  --primary:#4F46E5; --primary-fg:#FFFFFF;
+  --up:#E5383B; --up-text:#C81E1E; --down:#2563EB; --down-text:#2563EB;
+  --bg:#F5F5F8; --surface:#FFFFFF; --border:#E5E5EC;
+  --text-1:#1A1A2E; --text-2:#6B6B80; --muted:#9A9AAE;
+  --disclaimer:#52525B; --warn-text:#9A3E07; --warn-bg:#FEF3C7;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Segoe UI',Roboto,sans-serif;color:var(--text-1);-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.phone{max-width:390px;margin:24px auto;background:var(--bg);min-height:760px;border:1px solid var(--border);border-radius:28px;overflow:hidden;box-shadow:0 8px 40px rgba(26,26,46,.08)}
+.statusbar{height:14px}
+.scroll{padding:16px 16px 24px}
+
+/* card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:0 1px 2px rgba(26,26,46,.03)}
+.tickrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.ticker{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.ticker .ko{display:block;font-size:11px;font-weight:600;color:var(--text-2);margin-top:2px}
+.price{text-align:right}
+.price .p{font-size:20px;font-weight:700;letter-spacing:-.01em;color:var(--up)}
+.price .chg{font-size:12px;font-weight:700;color:var(--up-text);margin-top:2px}
+
+.asof{display:inline-flex;align-items:center;gap:4px;margin-top:10px;background:var(--warn-bg);color:var(--warn-text);font-size:11px;font-weight:600;line-height:1.5;padding:4px 10px;border-radius:9999px}
+
+.divline{height:1px;background:var(--border);margin:14px 0}
+
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:none;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.thesis{border-left:3px solid var(--border);padding:2px 0 2px 12px;margin-bottom:14px}
+.thesis.bull{border-left-color:var(--up)}
+.thesis.bear{border-left-color:var(--down)}
+.thesis.bull .sec-label{color:var(--up-text)}
+.thesis.bear .sec-label{color:var(--down-text)}
+.thesis ul{list-style:none}
+.thesis li{font-size:14px;line-height:1.55;color:var(--text-1);padding-left:14px;position:relative;margin-bottom:6px}
+.thesis li::before{content:"·";position:absolute;left:2px;color:var(--muted);font-weight:700}
+
+.meta{margin-top:4px}
+.meta-row{display:flex;align-items:flex-start;gap:8px;font-size:11px;font-weight:600;line-height:1.5;color:var(--text-2);margin-bottom:8px}
+.meta-row .k{flex:0 0 auto;color:var(--muted)}
+.src-chip{display:inline-block;font-size:11px;font-weight:600;color:var(--text-2);background:var(--bg);border:1px solid var(--border);border-radius:9999px;padding:2px 8px;margin:0 4px 4px 0}
+.checkpoint{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:600;color:var(--text-1)}
+.checkpoint .dd{margin-left:auto;font-size:12px;font-weight:700;color:var(--text-2)}
+
+.disclaimer{display:flex;gap:6px;align-items:flex-start;margin-top:14px;font-size:11px;line-height:1.5;color:var(--disclaimer)}
+.disclaimer .i{flex:0 0 auto;font-weight:700}
+
+.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:16px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:-.01em;cursor:pointer}
+
+.nudge{margin-top:14px;background:var(--surface);border:1px dashed var(--border);border-radius:10px;padding:12px 14px}
+.nudge .t{font-size:13px;font-weight:700;color:var(--text-1);line-height:1.45}
+.nudge .s{font-size:11px;font-weight:600;color:var(--text-2);margin-top:4px;line-height:1.5}
+.nudge .link{display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:var(--primary)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"></div>
+  <div class="scroll">
+
+    <article class="card" aria-label="NVDA 리서치 카드">
+      <div class="tickrow">
+        <div class="ticker">NVDA<span class="ko">엔비디아 · 미국</span></div>
+        <div class="price">
+          <div class="p num">$138.07</div>
+          <div class="chg num"><span aria-hidden="true">▲</span> +4.21 (+3.15%)<span class="sr">상승 3.15퍼센트</span></div>
+        </div>
+      </div>
+
+      <div class="asof"><span aria-hidden="true">⏱</span> as of 16:00 EOD · 6/20 · 실시간 아님</div>
+
+      <div class="divline"></div>
+
+      <section class="thesis bull" aria-label="상승 논리">
+        <div class="sec-label"><span aria-hidden="true">▲</span> 상승 논리</div>
+        <ul>
+          <li>데이터센터 매출 전분기 대비 +28%, AI 가속기 수요 견조</li>
+          <li>차세대 Blackwell 양산 일정 정상 — 공급 병목 완화 신호</li>
+          <li>주요 클라우드 3사 캡엑스 가이던스 상향</li>
+        </ul>
+      </section>
+
+      <section class="thesis bear" aria-label="하락 리스크">
+        <div class="sec-label"><span aria-hidden="true">▼</span> 하락 리스크</div>
+        <ul>
+          <li>선반영된 고평가 — 12개월 선행 P/E 38배, 멀티플 부담</li>
+          <li>대중국 수출 규제 추가 가능성, 매출 비중 노출</li>
+          <li>경쟁사 커스텀 칩 내재화로 점유율 희석 우려</li>
+        </ul>
+      </section>
+
+      <div class="meta">
+        <div class="meta-row">
+          <span class="k">출처</span>
+          <span>
+            <span class="src-chip">공시 10-Q</span>
+            <span class="src-chip">뉴스 6건</span>
+            <span class="src-chip">재무 데이터</span>
+          </span>
+        </div>
+        <div class="checkpoint">
+          <span aria-hidden="true">📅</span>
+          <span>실적 체크포인트 · 다음 실적 발표</span>
+          <span class="dd num">D-9 · 6/29</span>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <span class="i" aria-hidden="true">ⓘ</span>
+        <span>AI가 공개 데이터로 정리한 참고용 요약입니다. 투자 권유가 아닙니다.</span>
+      </div>
+
+      <button class="btn-primary" type="button">30초 체크 기록</button>
+    </article>
+
+    <!-- FR31: non-coercive nudge for lurkers -->
+    <div class="nudge" role="note">
+      <div class="t">이 결심, 30초로 남겨두면 한 달 뒤 옳았는지 알려드려요.</div>
+      <div class="s">강요하지 않아요. 보기만 하셔도 괜찮아요.</div>
+      <span class="link">나중에 · 지금은 카드만 볼게요 →</span>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
