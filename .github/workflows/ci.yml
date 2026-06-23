@@ -58,7 +58,8 @@ jobs:
           echo "OK: routers에 raw HTTPException 없음"
       - name: Guard — import anthropic only in services/llm
         run: |
-          hits=$(grep -rn "import anthropic" api/app --include=*.py 2>/dev/null | grep -v "app/services/llm/" || true)
+          # 실제 import 문(줄 시작)만 매칭 — 주석/docstring 오탐 방지
+          hits=$(grep -rnE "^[[:space:]]*(import|from)[[:space:]]+anthropic" api/app --include=*.py 2>/dev/null | grep -v "app/services/llm/" || true)
           if [ -n "$hits" ]; then
             echo "$hits"
             echo "::error::anthropic import는 services/llm(단일 LLM chokepoint) 안에서만"
