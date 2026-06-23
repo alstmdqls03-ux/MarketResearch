@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: Market Insight OS API
+  version: 0.1.0
+  description: >
+    서비스 간 계약의 단일 진실원(single source of truth).
+    와이어는 snake_case, 모든 오류는 단일 봉투, datetime은 ISO 8601 UTC 문자열.
+    실제 엔드포인트(research/reviews/brief/...)는 각 스토리(Epic 3-4)가 추가한다.
+
+# 부트스트랩 단계: 공통 계약(에러 봉투·enum)만 정의. paths 는 후속 스토리가 채움.
+paths:
+  /health:
+    get:
+      summary: 헬스체크
+      operationId: getHealth
+      responses:
+        "200":
+          description: 정상
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+components:
+  schemas:
+    # ── 단일 에러 봉투 (모든 오류 응답 공통) ──
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, retryable]
+          properties:
+            code:
+              type: string
+              description: 기계 판독용 오류 코드 (snake_case)
+            message:
+              type: string
+              description: 사람 읽는 메시지
+            retryable:
+              type: boolean
+              description: 재시도 가능 여부 (AI 실패=true → 가시적 재시도, FR42)
+            as_of:
+              type: string
+              format: date-time
+              description: 시세 stale 시 동봉하는 신선도 기준 시각 (ISO 8601 UTC, FR33)
+
+    # ── 공통 enum (DB·API·클라이언트 전 구간 동일) ──
+    Action:
+      type: string
+      enum: [buy, sell]
+    JobStatus:
+      type: string
+      enum: [pending, processing, done, failed]
+    Emotion:
+      type: string
+      enum: [평온, FOMO, 불안, 확신, 복수매매, 조급]
+
+  responses:
+    ErrorResponse:
+      description: 오류 (단일 봉투)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

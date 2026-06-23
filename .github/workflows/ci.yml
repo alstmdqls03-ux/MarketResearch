@@ -1,0 +1,81 @@
+name: CI
+
+# 하나라도 실패하면 머지 차단 (branch protection의 required status checks로 연결).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  web:
+    name: web (tsc → eslint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: tsc --noEmit
+        run: npx tsc --noEmit
+      - name: eslint
+        run: npm run lint
+
+  api:
+    name: api (ruff → pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --dev
+      - name: ruff
+        run: uv run ruff check .
+      - name: pytest
+        run: uv run pytest -q
+
+  contract-guards:
+    name: contract guards (grep → types-diff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard — routers must not raise HTTPException
+        run: |
+          if grep -rn "raise HTTPException" api/app/routers/ 2>/dev/null; then
+            echo "::error::routers에서 raw HTTPException 금지 — app.errors.AppError 사용"
+            exit 1
+          fi
+          echo "OK: routers에 raw HTTPException 없음"
+      - name: Guard — import anthropic only in services/llm
+        run: |
+          # 실제 import 문(줄 시작)만 매칭 — 주석/docstring 오탐 방지
+          hits=$(grep -rnE "^[[:space:]]*(import|from)[[:space:]]+anthropic" api/app --include=*.py 2>/dev/null | grep -v "app/services/llm/" || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"
+            echo "::error::anthropic import는 services/llm(단일 LLM chokepoint) 안에서만"
+            exit 1
+          fi
+          echo "OK: anthropic import 경계 준수"
+      - name: Supabase types drift (Story 1.3 스키마 동결 후 활성화)
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$SUPABASE_PROJECT_ID" ]; then
+            echo "::notice::SUPABASE_PROJECT_ID 미설정 — types-diff 게이트는 스키마 동결(Story 1.3) 후 활성화. 지금은 skip."
+            exit 0
+          fi
+          npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > /tmp/db.types.ts
+          # GENERATED 주석 줄을 제외하고 본문만 비교 (drift 0 이어야 통과)
+          diff <(grep -v '^//' web/lib/database.types.ts) <(grep -v '^//' /tmp/db.types.ts) \
+            || { echo "::error::database.types.ts drift — supabase gen types 결과와 불일치"; exit 1; }
