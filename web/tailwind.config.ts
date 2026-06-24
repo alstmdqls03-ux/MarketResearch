@@ -51,6 +51,35 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        // 의미·신뢰 토큰 (DESIGN.md) — 등락색 hue LOCKED, 등락 외 전용 금지
+        up: {
+          DEFAULT: "hsl(var(--up))",
+          text: "hsl(var(--up-text))",
+        },
+        down: {
+          DEFAULT: "hsl(var(--down))",
+          text: "hsl(var(--down-text))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          text: "hsl(var(--warning-text))",
+          bg: "hsl(var(--warning-bg))",
+        },
+        "disclaimer-fg": "hsl(var(--disclaimer-fg))",
+      },
+      fontFamily: {
+        sans: [
+          "Pretendard Variable",
+          "Pretendard",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "system-ui",
+          "Roboto",
+          "sans-serif",
+        ],
+      },
+      spacing: {
+        "tap-min": "44px", // 탭 타깃 최소 (NFR-U3, ≥44px)
       },
       borderRadius: {
         lg: "var(--radius)",
