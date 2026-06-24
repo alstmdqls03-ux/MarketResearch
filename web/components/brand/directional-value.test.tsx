@@ -32,6 +32,13 @@ describe("DirectionalValue", () => {
     expect(container.textContent).toContain("1,234.5");
   });
 
+  it("비유효 값(NaN/Infinity)은 'NaN'이 아니라 — + '데이터 없음'", () => {
+    const { container } = render(<DirectionalValue value={NaN} suffix="%" />);
+    expect(container.textContent).not.toContain("NaN");
+    expect(container.textContent).toContain("—");
+    expect(container.textContent).toContain("데이터 없음");
+  });
+
   it("axe 위반 없음", async () => {
     const { container } = render(<DirectionalValue value={2.5} suffix="%" />);
     const results = await axe(container);

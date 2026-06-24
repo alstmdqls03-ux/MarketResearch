@@ -225,3 +225,22 @@ claude-opus-4-8 (bmad-dev-story)
 1. **Tailwind v3 유지 vs v4 마이그레이션** — 리뷰 Finding #7. 권장=**v3 유지**(이유는 Dev Notes "v3/v4 결정"). dev-story 시작 전 OK 주시면 그대로, v4 원하면 별도 마이그레이션 태스크 추가.
 2. **Vitest 테스트러너 도입** — 이 스토리에서 web에 컴포넌트 테스트(+axe a11y 게이트)를 처음 들임. 아키텍처의 co-located `*.test.ts` 패턴에 부합하나 CI가 1스텝 늘어남. 도입 권장(접근성 베이스라인 스토리에 axe 자동검사가 딱 맞음). 빼고 싶으면 tsc+eslint+수동검증으로 축소 가능.
 3. **빈상태 카피** — 4개 탭 플레이스홀더 문구는 EXPERIENCE.md 톤("준비 중")으로 최소화. 실제 빈상태/온보딩 UX는 후속 스토리.
+
+---
+
+## Senior Developer Review (AI)
+
+- **리뷰어:** claude-opus-4-8 (인라인) · **일자:** 2026-06-24 · **대상:** feat/1-8-app-shell (PR #2)
+- **결과:** **Approve (minor fix applied)** — CI 3 jobs green. 재사용 헬퍼의 NaN 처리 1건 리뷰 중 수정.
+
+### Findings
+| # | 심각도 | 내용 | 처리 |
+|---|--------|------|------|
+| 1 | **Low→Fixed** | `DirectionalValue`가 NaN/Infinity 입력 시 "NaN" 렌더. 대시보드·리서치카드가 재사용할 헬퍼이고 시세 누락→0 나눗셈 등에서 NaN 발생 가능(NFR-R2: 누락은 "—"여야). | ✅ **수정** — `Number.isFinite` 가드 → "—" + SR "데이터 없음". 테스트 추가(11/11). |
+| 2 | Info | `bg-primary/10`(side-nav 활성) 등 opacity 모디파이어는 **공백 HSL 삼중값**(`243 75% 59%`)에 의존 → `hsl(var(--primary) / 0.1)`로 정상. shadcn 표준 패턴과 정합 확인. | 정상(조치 없음) |
+| 3 | Info | 전역 `:focus-visible` 링이 모든 포커스 요소에 광범위 적용 — a11y 베이스라인으로 적절. `main[tabindex=-1]`은 의도적으로 outline-none(스킵 링크 후 무음 포커스). | 수용 |
+| 4 | Info | `DirectionalValue`가 large/small 구분 없이 `-text` 변형 사용(항상 AA 안전, 다소 덜 선명). 향후 `size` prop로 fill 변형 노출 여지. | 후속 여지(비차단) |
+| 5 | Info | axe color-contrast는 jsdom canvas 미지원으로 스킵됨(경고) — 실제 대비는 DESIGN.md에서 검증된 토큰. E2E(Playwright+axe)는 후속 bmad-qa. | 수용 |
+
+### 종합
+셸·토큰·a11y 베이스라인이 스파인대로 섰고 CI 실측 green. 재사용 1순위 헬퍼(`DirectionalValue`)의 NaN 견고성을 리뷰에서 보강. CI 잡 이름 안정화로 향후 게이트 확장 시 required-check 깨짐도 예방. **머지 권장.**

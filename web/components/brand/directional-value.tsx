@@ -28,6 +28,15 @@ export function DirectionalValue({
   format,
   className,
 }: DirectionalValueProps) {
+  // 누락/비유효 값은 "NaN"이 아니라 명시적 미가용으로 표기 (NFR-R2).
+  if (!Number.isFinite(value)) {
+    return (
+      <span className={cn("text-muted-foreground", className)}>
+        <span className="sr-only">데이터 없음</span>
+        <span aria-hidden>—</span>
+      </span>
+    );
+  }
   const dir = directionOf(value);
   const glyph = dir === "up" ? "▲" : dir === "down" ? "▼" : "—";
   const sign = dir === "up" ? "+" : dir === "down" ? "−" : "";
