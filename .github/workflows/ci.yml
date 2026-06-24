@@ -9,7 +9,7 @@ on:
 
 jobs:
   web:
-    name: web (tsc → eslint)
+    name: web
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,9 +26,11 @@ jobs:
         run: npx tsc --noEmit
       - name: eslint
         run: npm run lint
+      - name: vitest
+        run: npm test
 
   api:
-    name: api (ruff → pytest)
+    name: api
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,7 +47,7 @@ jobs:
         run: uv run pytest -q
 
   contract-guards:
-    name: contract guards (grep → types-diff)
+    name: contract-guards
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

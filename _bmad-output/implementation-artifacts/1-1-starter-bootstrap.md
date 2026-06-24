@@ -232,7 +232,7 @@ claude-opus-4-8 (bmad-dev-story)
 | 3 | Low | CI web job이 `tsc`+`eslint`만, `next build` 미실행. AC2 요건은 충족하나 RSC/빌드 오류는 못 잡음. | 화면 생기는 1.8에서 build 게이트 추가 권장. |
 | 4 | Low | `web/package.json`의 `next: "latest"` 등 미고정(lockfile이 핀). | 스타터 산출물 존중(스토리 지침). lockfile로 재현성 확보. |
 | 5 | Info | `api/pyproject.toml` `requires-python = ">=3.14"` — Fly.io 런타임 이미지도 3.14 필요. | Story 3.1a 배포 시 반영. |
-| 6 | **Blocked** | **branch protection 적용 불가** — 무료 **private** repo는 classic·rulesets 모두 GitHub Pro/public 요구(403). AC2 "머지 차단"의 GitHub 강제가 안 됨. | 사용자 결정 필요: ①public 전환 ②Pro ③소프트 게이트(CI는 PR에 표시되나 하드 차단 없음)±pre-push 훅. |
+| 6 | ~~Blocked~~ → ✅ | branch protection이 무료 private repo에선 불가했음(403). | **해소(2026-06-22):** 사용자가 repo **public 전환**(시크릿 스캔 클린 선행) → `main`에 3개 CI 체크 required + strict 적용. **AC2 머지 차단 GH 강제됨.** |
 | 7 | Known | 스타터가 **Tailwind v3.4** 제공(아키텍처/UX는 v4 가정). | Story 1.8(디자인 토큰)에서 v3↔v4 결정. |
 
 ### 종합
