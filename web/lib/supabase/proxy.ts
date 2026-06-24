@@ -2,6 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 
+// 보호 정책 (순수 함수 — 테스트 용이). 공개 = 랜딩(/)·인증 플로우(/auth/*).
+// 그 외(앱 셸 (app)/* = /dashboard·/watchlist·/score·/brief 포함)는 로그인 필요.
+export function isPublicPath(pathname: string): boolean {
+  return pathname === "/" || pathname.startsWith("/auth");
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -47,15 +53,19 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const { pathname } = request.nextUrl;
+
+  if (!user && !isPublicPath(pathname)) {
+    // 비로그인 → 로그인 화면으로 리다이렉트 (FR1)
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && pathname === "/") {
+    // 로그인 사용자가 랜딩에 오면 앱 셸로 (랜딩 페이지는 정적 유지)
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 

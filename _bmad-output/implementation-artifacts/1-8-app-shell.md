@@ -4,7 +4,7 @@ baseline_commit: 1e5f397c317f22c089f2a4399095030e45ff8590
 
 # Story 1.8: 앱 셸 — 반응형 레이아웃 + 하단 탭바 + 접근성 베이스라인
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

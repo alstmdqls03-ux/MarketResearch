@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { cn } from "@/lib/utils";
@@ -9,7 +10,8 @@ import { cn } from "@/lib/utils";
 import { isActive, navItems } from "./nav-items";
 
 // 데스크톱 좌측 사이드 내비 (≥md). 모바일에선 숨김(하단 탭바가 대체). (UX-DR11)
-export function SideNav() {
+// authSlot = 서버에서 렌더한 로그인 사용자 표식/로그아웃(AuthBadge).
+export function SideNav({ authSlot }: { authSlot?: ReactNode }) {
   const pathname = usePathname();
   return (
     <nav
@@ -42,7 +44,8 @@ export function SideNav() {
           );
         })}
       </ul>
-      <div className="border-t border-border p-3">
+      <div className="flex flex-col gap-2 border-t border-border p-3">
+        {authSlot}
         <ThemeSwitcher />
       </div>
     </nav>
