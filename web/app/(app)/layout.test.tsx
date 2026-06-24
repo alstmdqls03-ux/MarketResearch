@@ -21,6 +21,11 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+// AuthBadge는 async 서버 컴포넌트(Supabase/next-headers) — 셸 구조 테스트에선 stub.
+vi.mock("@/components/app-shell/auth-badge", () => ({
+  AuthBadge: () => null,
+}));
+
 import AppLayout from "./layout";
 
 // 반응형 nav 2개(side/bottom)가 jsdom에선 모두 DOM에 남아 axe landmark-unique 오탐을 유발하므로
