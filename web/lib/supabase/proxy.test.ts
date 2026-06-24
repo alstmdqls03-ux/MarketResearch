@@ -20,4 +20,10 @@ describe("isPublicPath (보호 정책)", () => {
     expect(isPublicPath("/settings")).toBe(false);
     expect(isPublicPath("/decisions/123")).toBe(false);
   });
+
+  it("우발적 공개 방지: /auth 접두만 일치하는 경로는 보호", () => {
+    expect(isPublicPath("/authxyz")).toBe(false);
+    expect(isPublicPath("/auth-internal")).toBe(false);
+    expect(isPublicPath("/auth")).toBe(true); // 정확 매칭은 공개
+  });
 });

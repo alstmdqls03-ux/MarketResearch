@@ -190,3 +190,22 @@ claude-opus-4-8 (bmad-dev-story)
 1. ~~Supabase 인스턴스(블로커)~~ → ✅ **해소(2026-06-24):** 무료 클라우드 프로젝트 생성 완료 — `market-insight-os`(ref `gdygfmzxwwoagevngsom`, 서울 리전, $0/월, ACTIVE_HEALTHY). `web/.env.local`에 URL + publishable key 설정(git 제외). `hasEnvVars`가 true가 되어 미들웨어 가드 활성. **dev-story는 Task 1의 인스턴스 연결을 건너뛰고 이메일 인증 설정 확인부터 시작.** (스키마·RLS는 1.3)
 2. **랜딩(`/`) 처리** — MVP에선 인증 시 `/dashboard` 리다이렉트 + 비인증 최소 랜딩으로 가정. 본격 마케팅/온보딩 랜딩은 후속.
 3. **데모 정리 범위** — `/protected`·튜토리얼·deploy 버튼 제거 권장. 혹시 보존하고 싶은 게 있으면 알려주세요.
+
+---
+
+## Senior Developer Review (AI)
+
+- **리뷰어:** claude-opus-4-8 (인라인) · **일자:** 2026-06-24 · **대상:** feat/1-2-auth-login (PR #3)
+- **결과:** **Approve (2 fixes applied)** — CI 3 jobs green. 인증/세션 경계라 보호 로직 정밀 점검 후 2건 보강.
+
+### Findings
+| # | 심각도 | 내용 | 처리 |
+|---|--------|------|------|
+| 1 | Low→Fixed | `isPublicPath`가 `startsWith("/auth")` → `/authxyz`·`/auth-internal` 같은 가상 경로가 공개로 샐 여지. | ✅ **수정** — `=== "/auth"` + `startsWith("/auth/")`로 한정. 테스트 추가(15). |
+| 2 | **Low-Med→Fixed** | 미들웨어 리다이렉트가 `getClaims()`로 갱신된 **세션 쿠키를 이관 안 함**(스타터 주석 72-83이 경고하는 패턴). authed `/`→`/dashboard`에서 토큰 리프레시 유실 가능. | ✅ **수정** — `redirectWithSession()` 헬퍼로 supabaseResponse 쿠키를 리다이렉트 응답에 복사. |
+| 3 | Info | `hasEnvVars` false면 미들웨어가 **전체 스킵(fail-open)** — env 누락 시 보호 해제. 스타터 dev 편의 설계. | 프로덕션 배포 시 env 보장 필수. 향후 fail-closed 검토(비차단). |
+| 4 | Info | 라이브 e2e(가입→로그인) 미수행 — confirm-email 토글+실 메일박스 의존. unit(보호 정책)·빌드는 통과. | 머지 후 브라우저 수동 검증. |
+| 5 | Info | `getClaims()` JWT 검증을 신뢰(라이브러리). service_role은 어디에도 미저장(배치 전용, 3.1a). | 정상 |
+
+### 종합
+스타터 인증 자산을 재사용하며 연결·통합·정리를 완수. 보안 경계인 미들웨어에서 **공개 경로 누수(#1)와 세션 쿠키 유실(#2)**을 리뷰에서 보강 — 둘 다 인증 경계의 정확성 항목이라 지금 잡는 게 옳음. 라이브 e2e만 수동으로 남음. **머지 권장.**
