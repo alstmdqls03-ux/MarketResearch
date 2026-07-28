@@ -4,6 +4,21 @@
 > 모든 사실 주장에 출처. 확인 안 된 건 `[미확인]`.
 > **아이디어 제안 없음 / 시장규모·경쟁사 분석 없음** — 목적은 용어와 맥락 이해뿐.
 
+## ⚠ 2차 감사 요약 (읽고 시작할 것)
+
+**독립 확인 완료 ✔ — 통화에서 단정해도 되는 것**
+채용절차법 제4조의3 / 개인정보보호법 제37조의2 / 개인정보위 자동화 결정 고시 / LG 류재철 CEO 취임 / AX센터 신설 / 4개 사업본부 체제
+
+**삭제한 주장 2건**
+- AI기본법 **시행령** 시행일·내용 — 근거가 입법예고(제정안)뿐. **언급 금지**
+- 공공기관 AI면접 소송 **"2022 일부 승소"** — 판결 근거 없음. 제소 사실까지만
+
+**출처 URL 없는 주장 28건** — 약어 정의 18건(업계 표준, 저위험) / D트랙 LG 제도·용어 12건 중 일부 / A트랙 "하는 일" 정의 6건. **인용하지 말고 되물을 것**
+
+**`[미확인]` 15건** — 대부분 D트랙. 목록은 각 섹션 하단 참조
+
+**전 트랙 공통 한계**: 프록시가 law.go.kr·lge.co.kr·DART의 WebFetch를 403 차단 → **원문 직접 대조가 아니라 도메인 한정 검색 교차대조**로 검증했다.
+
 ---
 
 ## A. HR 업무 지도 (직원 1만명 이상 대기업 기준)
@@ -60,22 +75,24 @@
 ATS(Applicant Tracking System, 채용관리) / HRIS(Human Resource Information System, 인사정보) / HCM(Human Capital Management, 통합 인력관리) / **e-HR**(Electronic HR, 인사업무 전산화 — 국내 대기업 최다 사용 표현) / LMS·LXP(학습관리·학습경험) / C&B(Compensation & Benefits) / TA(Talent Acquisition) / L&D(Learning & Development) / OKR·MBO·KPI / eNPS(직원 추천지수) / SSO(Single Sign-On) / 마스터데이터
 
 ### 국내 솔루션 (도입 근거 확인된 것만)
-| 제품 | 제공사 | 용도 | 확인된 도입처 |
-|---|---|---|---|
-| 그리팅 | 두들린 | 채용관리(ATS) | [KB증권](https://blog.greetinghr.com/kbsec-interview/) — 대기업급 ✔ |
-| 잡다(JOBDA) | 마이다스인 | AI 역량검사·채용 매칭 | [포스코청암재단](https://zdnet.co.kr/view/?no=20230727165306) |
-| flex | 플렉스팀 | 근태·급여·전자결재 통합 | [닥터다이어리](https://flex.team/blog/2022/08/30/drdiary/) — 중소 규모 |
-| 시프티 | 시프티 | 근태·인력관리 | [미래에셋자산운용](https://shiftee.io/ko/customers/article/miraeassetinvestments) |
-| 하이웍스 | 가비아 | 그룹웨어 전자결재·연차 | [천우모터스](https://library.gabia.com/contents/groupware/7401/) — 중소 규모 |
+| 제품 | 제공사 | 용도 | 확인된 도입처 | 근거 종류 |
+|---|---|---|---|---|
+| 잡다(JOBDA) | 마이다스인 | AI 역량검사·채용 매칭 | [포스코청암재단](https://zdnet.co.kr/view/?no=20230727165306) | **독립 언론** ✔ |
+| 그리팅 | 두들린 | 채용관리(ATS) | [KB증권](https://blog.greetinghr.com/kbsec-interview/) | ⚠ 벤더 자사 게시 |
+| 시프티 | 시프티 | 근태·인력관리 | [미래에셋자산운용](https://shiftee.io/ko/customers/article/miraeassetinvestments) | ⚠ 벤더 자사 게시 |
 
 ### 해외 솔루션 (한국 도입 확인된 것만)
-| 제품 | 제공사 | 용도 | 확인된 한국 도입처 |
-|---|---|---|---|
-| Workday | Workday | 클라우드 HR 플랫폼 | [SK하이닉스·SK그룹 전사(2019)](https://www.etnews.com/20190731000150) ✔ |
-| SAP SuccessFactors | SAP | 인사·복리후생·급여 통합 HCM | [케이뱅크 구축](http://www.itdaily.kr/news/articleView.html?idxno=234596) ✔ |
+| 제품 | 제공사 | 용도 | 확인된 한국 도입처 | 근거 종류 |
+|---|---|---|---|---|
+| Workday | Workday | 클라우드 HR 플랫폼 | [SK하이닉스·SK그룹 전사(2019)](https://www.etnews.com/20190731000150) | **독립 언론** ✔ |
+| SAP SuccessFactors | SAP | 인사·복리후생·급여 통합 HCM | [케이뱅크 구축](http://www.itdaily.kr/news/articleView.html?idxno=234596) | **독립 언론** ✔ |
 
 ### ⚠ 근거 부족으로 제외 — 아는 척하지 말 것
-Greenhouse(한국 도입 근거 없음) / Culture Amp(동일) / Oracle HCM Cloud(클라우드 전환 사례는 있으나 HCM 모듈 도입 미확인) / Cornerstone(한국어 페이지만 존재) / 더존·이카운트 인사(구체 도입 사례 URL 미확인) / ONA(국내 실사용 미확인) / 'NICE 인사시스템'(제품 존재 자체 미확인)
+**2차 감사에서 추가 삭제**: flex(플렉스팀) — 근거가 벤더 자사 블로그 + 중소 규모 고객(닥터다이어리) / 하이웍스(가비아) — 벤더 자사 라이브러리 + 중소 규모 고객(천우모터스). 이름은 국내에서 통용되므로 **들으면 알아듣되, 도입 사례를 먼저 언급하지 말 것.**
+
+**1차에서 제외**: Greenhouse(한국 도입 근거 없음) / Culture Amp(동일) / Oracle HCM Cloud(클라우드 전환 사례는 있으나 HCM 모듈 도입 미확인) / Cornerstone(한국어 페이지만 존재) / 더존·이카운트 인사(구체 도입 사례 URL 미확인) / ONA(국내 실사용 미확인) / 'NICE 인사시스템'(제품 존재 자체 미확인)
+
+> ⚠ **약어 정의 18건은 출처 URL이 없다.** 업계 표준 정의라 실무 위험은 낮지만 검증된 인용은 아니다.
 
 > **LG전자가 무엇을 쓰는지는 `[미확인]`.** 자체 e-HR인지 SAP인지 공개 정보 없음 → 통화에서 물어볼 것.
 
@@ -108,7 +125,7 @@ Greenhouse(한국 도입 근거 없음) / Culture Amp(동일) / Oracle HCM Cloud
 | 제28조의8 | 국외 이전 원칙 금지 | 해외 리전·해외 LLM API 호출 = 국외이전 |
 | **제37조의2** (2024-03-15 시행) | 완전 자동화 결정이 권리·의무에 중대한 영향 → **거부권**. 자동화된 결정 일반 → **설명요구권**. 기준·절차 **공개 의무** | ⚠ **단서**: 제15조①1호(동의)·2호·4호(계약) 근거 결정은 **거부권 배제, 설명요구권은 유지** |
 
-원문: [개인정보보호법](https://law.go.kr/LSW/lsInfoP.do?lsiSeq=270351) · [자동화된 결정 조치 기준(고시)](https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000247380) · [개인정보위 안내서(2024.9)](https://www.privacy.go.kr/front/bbs/bbsView.do?bbsNo=BBSMSTR_000000000049&bbscttNo=20762)
+원문: [개인정보보호법](https://law.go.kr/LSW/lsInfoP.do?lsiSeq=270351) · [시행령 제18조(민감정보 범위·생체인식정보)](https://www.law.go.kr/lsLawLinkInfo.do?lsJoLnkSeq=900194861&chrClsCd=010202) · [자동화된 결정 조치 기준(고시)](https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000247380) · [개인정보위 안내서(2024.9)](https://www.privacy.go.kr/front/bbs/bbsView.do?bbsNo=BBSMSTR_000000000049&bbscttNo=20762)
 
 ### 근로기준법·기타 노동법
 | 조항 | 요지 |
@@ -122,13 +139,14 @@ Greenhouse(한국 도입 근거 없음) / Culture Amp(동일) / Oracle HCM Cloud
 | 고용정책기본법 제7조① | 성별·연령·**출신지역·학력·출신학교**·혼인·병력 차별 금지 → 학교 기반 스코어링의 직접 근거 조항 |
 | 연령차별금지법 제4조의4② | **연령 외 기준을 써도 특정 연령집단에 특히 불리한 결과면 연령차별로 본다** → 간접차별 조항. "나이 안 썼다"는 방어 불가 |
 
-원문: [근로기준법](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=232199) · [제94조](https://www.law.go.kr/lsLawLinkInfo.do?chrClsCd=010201&lsJoLnkSeq=1000453056) · [연령차별금지법](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=140218) · [고용정책기본법 제7조](https://www.law.go.kr/LSW//lsSideInfoP.do?lsiSeq=258087&joNo=0007&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR)
+원문: [근로기준법](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=232199) · [제94조](https://www.law.go.kr/lsLawLinkInfo.do?chrClsCd=010201&lsJoLnkSeq=1000453056) · [연령차별금지법](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=140218) · [고용정책기본법 제7조](https://www.law.go.kr/LSW//lsSideInfoP.do?lsiSeq=258087&joNo=0007&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR) · [남녀고용평등법 제37조(벌칙)](https://law.go.kr/LSW//lsSideInfoP.do?lsiSeq=265999&joNo=0037&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR)
 
 ### AI 채용 공정성 — 국내 사례 + AI기본법
 - **AI기본법** (법률 제20676호, 2025-01-21 공포 / **2026-01-22 시행**): 제2조제4호 고영향 AI 열거 영역에 **채용 포함**. 제31조 사전 고지 의무, 제33·34조 위험관리·설명방안 수립·문서 보관. **제35조 기본권 영향평가는 민간사업자에겐 "노력" 의무**(국가기관은 우선 고려). [원문](https://www.law.go.kr/lsInfoP.do?lsiSeq=268543)
-- **AI기본법 시행령**: 개정안 **2026-07-21 시행**(고영향 AI 판단기준, 생성형 AI 표시, 영향평가 구체화). 시행 1주 경과 시점이라 확정본 세부 문언은 `[미확인]` — 통화에서 단정 금지. [법제처 입법예고](https://www.moleg.go.kr/lawinfo/makingInfo.mo?lawSeq=84360&lawCd=0&lawType=TYPE5&mid=a10104010000)
+- **AI기본법 시행령**: `[미확인]` — **2차 감사에서 시행일·내용 주장 삭제.** 확보된 근거는 법제처 **입법예고(제정안)** 링크뿐이며 확정본 시행일·조문을 확인하는 원문 URL이 없다. 통화에서 시행령은 **언급하지 마라.** [법제처 입법예고(제정안)](https://www.moleg.go.kr/lawinfo/makingInfo.mo?lawSeq=84360&lawCd=0&lawType=TYPE5&mid=a10104010000)
 - ★ **개인정보위 안내서(2024.9) 핵심 한 줄**: "AI 면접만으로 응시자를 분석해 불합격 결정 → 자동화된 결정 **해당**. 권한 있는 인사위원회가 실질적으로 채용 여부를 결정하고 AI 산출자료를 참고하는 경우 → **제외**." [안내서](https://www.privacy.go.kr/front/bbs/bbsView.do?bbsNo=BBSMSTR_000000000049&bbscttNo=20762)
-- **공공기관 AI면접 정보공개 거부처분 취소소송** (2020 제소, 2022 일부 승소): 민변 디지털정보위·정보인권연구소·진보네트워크센터가 인천국제공항공사·KOICA·한전KDN 등 상대. 기관들이 "자료는 용역사 보유, 당사엔 없다"고 답변 → **발주처 책무성 부재** 확인. [한국경제](https://www.hankyung.com/article/2020102755421)
+- **공공기관 AI면접 정보공개 거부처분 취소소송** (2020 제소): 민변 디지털정보위·정보인권연구소·진보네트워크센터가 인천국제공항공사·KOICA·한전KDN 등 상대로 제소. 기관들이 "자료는 용역사 보유, 당사엔 없다"고 답변 → **발주처 책무성 부재**가 드러남. [한국경제(2020-10-27)](https://www.hankyung.com/article/2020102755421)
+  - ⚠ **2차 감사에서 "2022 일부 승소" 삭제** — 판결문도 판결 보도 URL도 없다. **소송 결과는 언급하지 마라.** 제소 사실과 기관 답변까지만 사실로 쓸 수 있다.
 - **국가인권위 AI 인권 가이드라인 권고**(2022-05-11): 차별 금지·투명성·인권영향평가. 강제력 없으나 감독기관·언론의 판단 프레임. [인권위](https://www.humanrights.go.kr/base/board/read?boardManagementNo=24&boardNo=7608423&menuLevel=3&menuNo=91)
 
 ### ★ "이건 자동화하면 안 된다" — 전체 목록은 risks.md 참조
